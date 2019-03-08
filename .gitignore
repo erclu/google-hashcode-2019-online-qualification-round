@@ -1,4 +1,11 @@
 out/*.txt
+
+# ignore virtualenv folders
 hash-venv
+env
+
+# ignore vs code files
 .vscode
-src/__pycache__/*
+
+# ignore pycaches everywhere
+__pycache__
