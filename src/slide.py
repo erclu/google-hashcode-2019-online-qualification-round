@@ -1,6 +1,6 @@
 class Slide():
 
-    def __init__(self, photo1, photo2 = None):
+    def __init__(self, photo1, photo2=None):
         if photo2 != None: #se ho due foto verticali
             self.photo1 = photo1
             self.photo2 = photo2
@@ -22,4 +22,3 @@ class Slide():
 
     # del __gt__(self, obj):
     #     return (len(self.tags) > len(obj.tags))
-          
