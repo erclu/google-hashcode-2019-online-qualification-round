@@ -1,4 +1,6 @@
+from pathlib import Path
 from random import randint
+from typing import List
 
 import numpy as np
 from tqdm import tqdm
@@ -7,19 +9,16 @@ from photo import Photo
 from slide import Slide
 
 
-def parseFile(filename):
-    f = open(filename, 'r')
-    lines = f.read().split('\n')
-    lines.pop()
-    return lines[1:]
+def parse_file(filename: Path) -> List[str]:
+    return filename.read_text().split('\n')[1:-1]
 
 
 def output(slideshow, out_file):
-    f = open(out_file, "w")
-    f.write(str(len(slideshow)) + "\n")
+    file = open(out_file, "w")
+    file.write(str(len(slideshow)) + "\n")
     for slide in slideshow:
-        f.write(str(slide) + "\n")
-    f.close()
+        file.write(str(slide) + "\n")
+    file.close()
 
 
 def function(set1, set2):
@@ -29,17 +28,17 @@ def function(set1, set2):
     return min(intersection, diff1, diff2)
 
 
-def photoCombiner(listOfPic):
-    listpics = []
+def photo_combiner(list_of_pics):
+    vertical_pics = []
     slide = []
-    for pic in listOfPic:
-        if (pic.orientation == 'V'):
-            listpics.append(pic)
+    for pic in list_of_pics:
+        if pic.orientation == 'V':
+            vertical_pics.append(pic)
         else:
             slide.append(Slide(pic))
 
-    for i in range(0, len(listpics), 2):
-        slide.append(Slide(listpics[i], listpics[i + 1]))
+    for i in range(0, len(vertical_pics), 2):
+        slide.append(Slide(vertical_pics[i], vertical_pics[i + 1]))
     return slide
 
 
@@ -47,24 +46,30 @@ def get_slideshow(slides):
     limit = 10
     slideshow = []
     point_list = []
-    #bitmask where already picked slides are remembered
+    # bitmask where already picked slides are remembered
     bitmask = np.zeros(len(slides))
-    #index of last slide that was added to slideshow
+    # index of last slide that was added to slideshow
     last_added = randint(0, len(slides))
     slideshow.append(slides[last_added])
-    for i in tqdm(range(len(slides) - 1)):
+
+    for _ in tqdm(range(len(slides) - 1)):
         max_point = 0
         best_index = -1
-        #non taken slides
+        # non taken slides
         valid_indexes = np.nonzero(bitmask - 1)[0]
-        #can be done way better with binary search
+        # can be done way better with binary search
         last_pos = np.where(valid_indexes == last_added)[0][0]
-        #taking 2*limit valid slides to be compared with last slide except last slide
+        # taking 2*limit valid slides to be compared with last slide
         sup_lim = last_pos + limit
         inf_lim = last_pos - limit
-        wanted_indexes = np.concatenate((
-          valid_indexes[inf_lim:last_pos - 1],
-          valid_indexes[last_pos + 1:sup_lim]))
+        wanted_indexes = np.concatenate(
+          (
+            valid_indexes[inf_lim:last_pos - 1],
+            valid_indexes[last_pos + 1:sup_lim]
+          )
+        )
+
+        # FIXME
         if len(wanted_indexes) == 0:
             break
         for slide in wanted_indexes:
@@ -89,3 +94,34 @@ def check_validity(slideshow, points):
         return 0
     else:
         return np.sum(points)
+
+
+def main():
+    input_folder: Path = Path(__file__).resolve().parents[1].joinpath("in")
+    input_files = input_folder.glob("input*")
+
+    index = 1
+    tot_points = []
+
+    for file in input_files:
+        lines = parse_file(file)
+
+        photos = [
+          Photo.from_str(photoid, value)
+          for photoid, value in enumerate(lines)
+        ]
+
+        photos.sort(key=lambda x: len(x.tags))
+
+        slides = photo_combiner(photos)
+        slideshow, points = get_slideshow(slides)
+
+        tot_points.append(check_validity(slideshow, np.array(points)))
+        output(slideshow, "../out/output" + str(index) + ".txt")
+        index += 1
+    print("\n\n\n\npoints for each input")
+    print(*tot_points)
+
+
+if __name__ == "__main__":
+    main()

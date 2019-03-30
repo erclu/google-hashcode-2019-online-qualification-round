@@ -7,12 +7,10 @@ class Photo():
 
     @classmethod
     def from_str(cls, photoid, line: str):
-        #print(line)
         args = line.split(" ")
         orient = args[0]
         howmanytags = int(args[1])
         args = args[2:]
-        #calma mari
         if orient not in ("H", "V"):
             raise ValueError("wrong orient")
 
