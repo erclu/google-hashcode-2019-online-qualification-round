@@ -9,16 +9,46 @@ align_closing_bracket_with_visual_indent=True
 #        'this is the second element of a tuple'):
 #            value,
 #   }
-allow_multiline_dictionary_keys=True
+allow_multiline_dictionary_keys=False
 
 # Allow lambdas to be formatted on more than one line.
 allow_multiline_lambdas=True
 
+# Allow splitting before a default / named assignment in an argument list.
+allow_split_before_default_or_named_assigns=True
+
 # Allow splits before the dictionary value.
 allow_split_before_dict_value=True
 
+#   Let spacing indicate operator precedence. For example:
+#
+#     a = 1 * 2 + 3 / 4
+#     b = 1 / 2 - 3 * 4
+#     c = (1 + 2) * (3 - 4)
+#     d = (1 - 2) / (3 + 4)
+#     e = 1 * 2 - 3
+#     f = 1 + 2 + 3 + 4
+#
+# will be formatted as follows to indicate precedence:
+#
+#     a = 1*2 + 3/4
+#     b = 1/2 - 3*4
+#     c = (1+2) * (3-4)
+#     d = (1-2) / (3+4)
+#     e = 1*2 - 3
+#     f = 1 + 2 + 3 + 4
+#
+arithmetic_precedence_indication=False
+
+# Number of blank lines surrounding top-level function and class
+# definitions.
+blank_lines_around_top_level_definition=2
+
 # Insert a blank line before a class-level docstring.
 blank_line_before_class_docstring=False
+
+# Insert a blank line before a module docstring.
+blank_line_before_module_docstring=False
 
 # Insert a blank line before a 'def' or 'class' immediately nested
 # within another 'def' or 'class'. For example:
@@ -45,10 +75,26 @@ blank_line_before_nested_class_or_def=True
 #        'key1': 'value1',
 #        'key2': 'value2',
 #    })
-coalesce_brackets=True
+coalesce_brackets=False
 
 # The column limit.
 column_limit=79
+
+# The style for continuation alignment. Possible values are:
+#
+# - SPACE: Use spaces for continuation alignment. This is default behavior.
+# - FIXED: Use fixed number (CONTINUATION_INDENT_WIDTH) of columns
+#   (ie: CONTINUATION_INDENT_WIDTH/INDENT_WIDTH tabs) for continuation
+#   alignment.
+# - LESS: Slightly left if cannot vertically align continuation lines with
+#   indent characters.
+# - VALIGN-RIGHT: Vertically align continuation lines with indent
+#   characters. Slightly right (one more indent character) if cannot
+#   vertically align continuation lines with indent characters.
+#
+# For options FIXED, and VALIGN-RIGHT are only available when USE_TABS is
+# enabled.
+continuation_align_style=SPACE
 
 # Indent width used for line continuations.
 continuation_indent_width=2
@@ -69,7 +115,11 @@ continuation_indent_width=2
 #       start_ts=now()-timedelta(days=3),
 #       end_ts=now(),
 #   )        # <--- this bracket is dedented and on a separate line
-dedent_closing_brackets=False
+dedent_closing_brackets=True
+
+# Disable the heuristic which places each list element on a separate line
+# if the list is comma-terminated.
+disable_ending_comma_heuristic=False
 
 # Place each dictionary entry onto its own line.
 each_dict_entry_on_separate_line=False
@@ -83,6 +133,9 @@ i18n_comment=
 # reformattting on that line, because the string it has cannot be moved
 # away from the i18n comment.
 i18n_function_call=
+
+# Indent blank lines.
+indent_blank_lines=False
 
 # Indent the dictionary value if it cannot fit on the same line as the
 # dictionary key. For example:
@@ -105,11 +158,11 @@ join_multiple_lines=True
 #
 #   1 + 2 * 3 - 4 / 5
 #
-# will be formatted as follows when configured with a value "*,/":
+# will be formatted as follows when configured with "*,/":
 #
 #   1 + 2*3 - 4/5
 #
-no_spaces_around_selected_binary_operators=*,/,**
+no_spaces_around_selected_binary_operators=*,/
 
 # Use spaces around default or named assigns.
 spaces_around_default_or_named_assign=False
@@ -118,19 +171,62 @@ spaces_around_default_or_named_assign=False
 spaces_around_power_operator=False
 
 # The number of spaces required before a trailing comment.
-spaces_before_comment=1
+# This can be a single value (representing the number of spaces
+# before each trailing comment) or list of values (representing
+# alignment column values; trailing comments within a block will
+# be aligned to the first column value that is greater than the maximum
+# line length within the block). For example:
+#
+# With spaces_before_comment=5:
+#
+#   1 + 1 # Adding values
+#
+# will be formatted as:
+#
+#   1 + 1     # Adding values <-- 5 spaces between the end of the statement and comment
+#
+# With spaces_before_comment=15, 20:
+#
+#   1 + 1 # Adding values
+#   two + two # More adding
+#
+#   longer_statement # This is a longer statement
+#   short # This is a shorter statement
+#
+#   a_very_long_statement_that_extends_beyond_the_final_column # Comment
+#   short # This is a shorter statement
+#
+# will be formatted as:
+#
+#   1 + 1          # Adding values <-- end of line comments in block aligned to col 15
+#   two + two      # More adding
+#
+#   longer_statement    # This is a longer statement <-- end of line comments in block aligned to col 20
+#   short               # This is a shorter statement
+#
+#   a_very_long_statement_that_extends_beyond_the_final_column  # Comment <-- the end of line comments are aligned based on the line length
+#   short                                                       # This is a shorter statement
+#
+spaces_before_comment=2
 
 # Insert a space between the ending comma and closing bracket of a list,
 # etc.
 space_between_ending_comma_and_closing_bracket=True
 
+# Split before arguments
+split_all_comma_separated_values=False
+
 # Split before arguments if the argument list is terminated by a
 # comma.
-split_arguments_when_comma_terminated=False
+split_arguments_when_comma_terminated=True
 
 # Set to True to prefer splitting before '&', '|' or '^' rather than
 # after.
 split_before_bitwise_operator=True
+
+# Split before the closing bracket if a list or dict literal doesn't fit on
+# a single line.
+split_before_closing_bracket=True
 
 # Split before a dictionary or set generator (comp_for). For example, note
 # the split before the 'for':
@@ -140,6 +236,16 @@ split_before_bitwise_operator=True
 #       for variable in bar if variable != 42
 #   }
 split_before_dict_set_generator=True
+
+# Split before the '.' if we need to split a longer expression:
+#
+#   foo = ('This is a really long string: {}, {}, {}, {}'.format(a, b, c, d))
+#
+# would reformat to something like:
+#
+#   foo = ('This is a really long string: {}, {}, {}, {}'
+#          .format(a, b, c, d))
+split_before_dot=True
 
 # Split after the opening paren which surrounds an expression if it doesn't
 # fit on a single line.
@@ -190,7 +296,7 @@ split_penalty_bitwise_operator=300
 split_penalty_comprehension=80
 
 # The penalty for characters over the column limit.
-split_penalty_excess_character=4500
+split_penalty_excess_character=7000
 
 # The penalty incurred by adding a line split to the unwrapped line. The
 # more line splits added the higher the penalty.

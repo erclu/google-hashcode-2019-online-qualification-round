@@ -54,17 +54,13 @@ confidence=
 # --enable=similarities". If you want to run only the classes checker, but have
 # no Warning level messages displayed, use"--disable=all --enable=classes
 # --disable=W"
-disable=no-else-return,
-        missing-docstring,
-        missing-final-newline,
-        #bad-whitespace
-        
+disable=no-else-return
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option
 # multiple time (only on the command line, not in the configuration file where
 # it should appear only once). See also the "--disable" option for examples.
-enable=trailing-newlines
+enable=
 
 
 [REPORTS]
@@ -162,6 +158,7 @@ good-names=i,
            j,
            k,
            x,
+           id,
            it,
            el,
            ex,
@@ -260,10 +257,8 @@ logging-modules=logging
 
 # List of note tags to take in consideration, separated by a comma.
 notes=FIXME,
-      XXX,
       TODO,
-      todo
-
+      XXX
 
 [SIMILARITIES]
 
