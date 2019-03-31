@@ -1,12 +1,12 @@
 out/*.txt
 
-# ignore virtualenv folders
-hash-venv
-env
-
-# ignore vs code files
+# vs code stuff
 .vscode
 *.code-workspace
 
-# ignore pycaches everywhere
+# python stuff
 __pycache__
+
+env
+
+.pytest_cache
