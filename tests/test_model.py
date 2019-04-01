@@ -46,7 +46,7 @@ def test_write():
     example_out_file: Path = Path(__file__).resolve(
     ).parents[1]/"out"/"output_of_example.txt"
 
-    write_output_file(example_out_file, slideshow.to_string())
+    write_output_file(example_out_file, slideshow)
 
     #TODO improve this test (fixtures?)
 
