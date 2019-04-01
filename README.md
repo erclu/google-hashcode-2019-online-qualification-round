@@ -5,3 +5,10 @@ this repo contains my improvements on the solution we submitted for the extended
 |extended round score|top score|
 |-:|-:|
 | 796.086 | 1.271.117
+
+|file|score|
+|-:|:-|
+|input1|21081|
+|input2|1416|
+|input3|412436|
+|input4|361153|
