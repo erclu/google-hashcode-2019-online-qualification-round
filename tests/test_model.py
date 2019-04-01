@@ -1,20 +1,26 @@
 from itertools import permutations
 from pathlib import Path
 
+import pytest
+
 from solver import model
 from solver.utils import photos_from_file, write_output_file
 
 
-def test_example_file():
-    example_file: Path = Path(__file__
-                              ).resolve().parents[1]/"in"/"a_example.txt"
+@pytest.fixture(scope="session")
+def example_photos():
+    example_file: Path = Path(__file__).resolve().parents[1].joinpath(
+      "in", "a_example.txt"
+    )
     assert example_file.exists()
+    return photos_from_file(example_file)
 
-    photos = photos_from_file(example_file)
 
-    hor_slide = model.HorizontalSlide(photos[0])
-    another_hor_slide = model.HorizontalSlide(photos[3])
-    vert_slide = model.VerticalSlide(photos[1], photos[2])
+def test_example_file(example_photos):
+
+    hor_slide = model.HorizontalSlide(example_photos[0])
+    another_hor_slide = model.HorizontalSlide(example_photos[3])
+    vert_slide = model.VerticalSlide(example_photos[1], example_photos[2])
 
     assert all(tag in hor_slide.tags for tag in ["cat", "beach", "sun"])
     assert another_hor_slide.photo.orientation == "H"
@@ -29,26 +35,17 @@ def test_example_file():
         assert slideshow.score() == result
 
 
-def test_write():
-    example_file: Path = Path(__file__
-                              ).resolve().parents[1]/"in"/"a_example.txt"
-    assert example_file.exists()
-
-    photos = photos_from_file(example_file)
-
+def test_write(example_photos, tmp_path):
     slides_list = [
-      model.HorizontalSlide(photos[0]),
-      model.HorizontalSlide(photos[3]),
-      model.VerticalSlide(photos[1], photos[2])
+      model.HorizontalSlide(example_photos[0]),
+      model.HorizontalSlide(example_photos[3]),
+      model.VerticalSlide(example_photos[1], example_photos[2])
     ]
     slideshow = model.Slideshow.from_list(slides_list)
 
-    example_out_file: Path = Path(__file__).resolve(
-    ).parents[1]/"out"/"output_of_example.txt"
+    example_out_file: Path = tmp_path.joinpath("output_of_example.txt")
 
     write_output_file(example_out_file, slideshow)
-
-    #TODO improve this test (fixtures?)
 
 
 def test_slideshow_score():
@@ -75,17 +72,12 @@ def test_slideshow_score():
                 assert photo.photo_id == index
                 slide: model.HorizontalSlide = model.HorizontalSlide(photo)
             else:
-                split_str_index = str_index.split(" ")
-                i, j = int(split_str_index[0]), int(split_str_index[1])
-                first_photo: model.Photo = photos[i]
-                second_photo: model.Photo = photos[j]
-                assert first_photo.photo_id == i and second_photo.photo_id == j
+                i, j = [int(x) for x in str_index.split(" ")]
                 slide: model.VerticalSlide = model.VerticalSlide(
-                  first_photo, second_photo
+                  photos[i], photos[j]
                 )
+                assert slide.first.photo_id == i and slide.second.photo_id == j
 
             slideshow.append(slide)
 
         assert slideshow.score() == scores[x - 1]
-
-    # assert False

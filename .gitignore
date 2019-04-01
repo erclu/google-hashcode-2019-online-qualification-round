@@ -6,7 +6,5 @@ out/*.txt
 
 # python stuff
 __pycache__
-
+.pytest*
 env
-
-.pytest_cache
