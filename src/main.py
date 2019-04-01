@@ -21,7 +21,7 @@ def output(slideshow, out_file):
     file.close()
 
 
-def function(set1, set2):
+def score(set1, set2):
     intersection = len(set1.intersection(set2))
     diff1 = len(set1.difference(set2))
     diff2 = len(set2.difference(set1))
@@ -73,7 +73,7 @@ def get_slideshow(slides):
         if len(wanted_indexes) == 0:
             break
         for slide in wanted_indexes:
-            points = function(slides[last_added].tags, slides[slide].tags)
+            points = score(slides[last_added].tags, slides[slide].tags)
             if max_point <= points:
                 best_index = slide
                 max_point = points
