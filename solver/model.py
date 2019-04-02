@@ -64,6 +64,18 @@ class HorizontalSlide(Slide):
     def __repr__(self):
         return str(self.photo.photo_id)
 
+    def __hash__(self):
+        return self.photo.photo_id
+
+    def __eq__(self, other) -> bool:
+        try:
+            return self.photo.photo_id == other.photo.photo_id
+        except AttributeError():
+            return False
+
+    def __ne__(self, other) -> bool:
+        return not self == other
+
     @property
     def tags(self) -> Set[str]:
         return self.photo.tags
@@ -80,6 +92,19 @@ class VerticalSlide(Slide):
 
     def __repr__(self):
         return f"{self.first} {self.second}"
+
+    def __hash__(self):
+        return hash((self.first.photo_id, self.second.photo_id))
+
+    def __eq__(self, other):
+        try:
+            return (self.first.photo_id, self.second.photo_id
+                    ) == (other.first.photo_id, other.second.photo_id)
+        except AttributeError():
+            return False
+
+    def __ne__(self, other):
+        return not self == other
 
     @property
     def tags(self) -> Set[str]:
