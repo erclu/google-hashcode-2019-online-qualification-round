@@ -1,13 +1,13 @@
+import random
 from pathlib import Path
-from random import randrange
 from typing import List
 
 from tqdm import tqdm
 
 from . import model
-from .utils import photos_from_file, write_output_file
 
 
+#TODO refactor _solve to solve
 def _solve(photos: List[model.Photo]) -> model.Slideshow:
 
     raise NotImplementedError()
@@ -25,20 +25,20 @@ def do_all():
     for file in input_files:
         output_file = output_folder/file.name.replace("input", "output")
 
-        photos: List[model.Photo] = photos_from_file(file)
+        photos: List[model.Photo] = model.Photo.from_file(file)
 
         slideshow: model.Slideshow = _solve(photos)
 
-        write_output_file(output_file, slideshow)
+        slideshow.save(output_file)
 
 
 def do_one(file: str):
-
     input_file: Path = Path(file).resolve()
 
-    photos: List[model.Photo] = photos_from_file(input_file)
-
+    photos: List[model.Photo] = model.Photo.from_file(input_file)
     slideshow: model.Slideshow = _solve(photos)
-    # write_output_file(output_file, slideshow)
-
     print(slideshow.score())
+
+    output_file: Path = Path.cwd().joinpath(f"out-{slideshow.score()}.txt")
+
+    slideshow.save(output_file)

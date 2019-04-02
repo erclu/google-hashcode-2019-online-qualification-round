@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import List, Set
 
 
@@ -31,6 +32,15 @@ class Photo:
         assert len(tags) == int(args[1]), "not all tags were found"
 
         return cls(photo_id, orientation, tags)
+
+    @staticmethod
+    def from_file(filename: Path):
+        content = filename.read_text()
+
+        # drop first and last line in file
+        photos_lines: List[str] = content.split("\n")[1:-1]
+
+        return [Photo.from_str(pid, x) for pid, x in enumerate(photos_lines)]
 
 
 class Slide:
@@ -89,6 +99,9 @@ class Slideshow:
         return f"{len(self.slides)}\n" + "\n".join(
           str(x) for x in self.slides
         ) + "\n"
+
+    def save(self, filename: Path) -> None:
+        filename.write_text(self.to_string(), encoding="UTF-8")
 
     def append(self, slide: Slide) -> None:
         if self.slides:

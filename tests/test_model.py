@@ -1,10 +1,10 @@
+# pylint: disable=redefined-outer-name
 from itertools import permutations
 from pathlib import Path
 
 import pytest
 
 from solver import model
-from solver.utils import photos_from_file, write_output_file
 
 
 @pytest.fixture(scope="session")
@@ -13,7 +13,8 @@ def example_photos():
       "in", "a_example.txt"
     )
     assert example_file.exists()
-    return photos_from_file(example_file)
+
+    return model.Photo.from_file(example_file)
 
 
 def test_example_file(example_photos):
@@ -45,7 +46,7 @@ def test_write(example_photos, tmp_path):
 
     example_out_file: Path = tmp_path.joinpath("output_of_example.txt")
 
-    write_output_file(example_out_file, slideshow)
+    slideshow.save(example_out_file)
 
 
 def test_slideshow_score():
@@ -59,7 +60,7 @@ def test_slideshow_score():
         )
         assert input_file.exists() and solution.exists()
 
-        photos = photos_from_file(input_file)
+        photos = model.Photo.from_file(input_file)
 
         sol_indexes = solution.read_text().split("\n")[1:-1]
 
