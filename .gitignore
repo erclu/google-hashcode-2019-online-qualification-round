@@ -1,4 +1,5 @@
 out/*.txt
+out_do_one/
 
 # vs code stuff
 .vscode

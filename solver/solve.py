@@ -48,9 +48,9 @@ def _get_vertical_slides(photos: List[model.Photo]
 
 def solve(photos: List[model.Photo]) -> model.Slideshow:
 
-    slides: Set[model.Slide] = _get_horizontal_slides(photos).union(
-      _get_vertical_slides(photos)
-    )
+    slides: Set[model.Slide] = _get_horizontal_slides(photos)
+    slides.update(_get_vertical_slides(photos))
+    print("------------ made slides from photos ------------")
 
     slideshow: model.Slideshow = model.Slideshow()
 
@@ -59,14 +59,14 @@ def solve(photos: List[model.Photo]) -> model.Slideshow:
 
     slideshow.append(current_slide)
 
-    window_size = 500  # XXX less than 500 gets awful scores...
+    window_size = 5000  # XXX less than 500 gets bad scores
     with tqdm(total=len(slides)) as pbar:
         while slides:
             max_score: int = -1
             best_slide: model.Slide = None
 
-            for next_slide in tqdm(random.sample(slides, min(window_size,
-                                                             len(slides)))):
+            for next_slide in random.sample(slides, min(window_size,
+                                                        len(slides))):
                 new_score = current_slide.score(next_slide)
                 if new_score > max_score:
                     max_score = new_score
@@ -79,7 +79,6 @@ def solve(photos: List[model.Photo]) -> model.Slideshow:
             pbar.set_postfix_str(s="score: " + str(slideshow.score()))
             pbar.update()
 
-    print()
     return slideshow
 
 
@@ -110,8 +109,9 @@ def do_one(file: str):
     print(slideshow.score())
 
     input_name: str = input_file.name.replace(".txt", "")
-    output_file: Path = Path.cwd(
-    ).joinpath(f"out-from_{input_name}-score_{slideshow.score()}.txt")
+    output_file: Path = Path.cwd().joinpath(
+      "out_do_one", f"out-from_{input_name}-score_{slideshow.score()}.txt"
+    )
 
     slideshow.save(output_file)
 
