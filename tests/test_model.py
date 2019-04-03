@@ -82,3 +82,9 @@ def test_slideshow_score():
             slideshow.append(slide)
 
         assert slideshow.score() == scores[x - 1]
+
+
+#TODO add test to check output file validity
+@pytest.mark.skip(reason="not implemented yet")
+def test_output_file():
+    assert 0
