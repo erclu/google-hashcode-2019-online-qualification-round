@@ -1,0 +1,10 @@
+[run]
+branch = True
+omit =
+    tests/*
+    env/*
+
+[report]
+exclude_lines =
+    # Don't complain if tests don't hit defensive assertion code:
+    raise NotImplementedError
