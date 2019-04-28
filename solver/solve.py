@@ -31,11 +31,26 @@ def _get_vertical_slides(photos: List[model.Photo]
 
         return random.sample(matches, 1)[0]
 
+        # max_score: int = -1
+        # best_photo: model.Slide = None
+
+        # window_size = 2000
+        # sliding_window = random.sample(matches, min(window_size, len(matches)))
+        # for other_photo in sliding_window:
+        #     new_score = model.score_tags(
+        #       photo.tags, other_photo.tags
+        #     ) #XXX this is ugly
+        #     if new_score > max_score:
+        #         max_score = new_score
+        #         best_photo = other_photo
+
+        # return best_photo
+
     while vertical_photos:
         current: model.Photo = vertical_photos.pop()
 
         if not vertical_photos:
-            break  # handle case with odd number of vertical photos
+            break # handle case with odd number of vertical photos
 
         other: model.Photo = best_match(current, vertical_photos)
 
@@ -59,14 +74,17 @@ def solve(photos: List[model.Photo]) -> model.Slideshow:
 
     slideshow.append(current_slide)
 
-    window_size = 5000  # XXX less than 500 gets bad scores
+    window_size = 5000 # XXX less than 500 gets bad scores
     with tqdm(total=len(slides)) as pbar:
         while slides:
             max_score: int = -1
             best_slide: model.Slide = None
 
-            for next_slide in random.sample(slides, min(window_size,
-                                                        len(slides))):
+            sliding_window = random.sample(
+              slides, min(window_size, len(slides))
+            )
+
+            for next_slide in sliding_window:
                 new_score = current_slide.score(next_slide)
                 if new_score > max_score:
                     max_score = new_score
@@ -90,14 +108,17 @@ def do_all():
 
     input_files = input_folder.glob("input*")
 
-    file: Path
-    for file in input_files:
-        output_file = output_folder/file.name.replace("input", "output")
-
-        photos: List[model.Photo] = model.Photo.from_file(file)
+    input_file: Path
+    for input_file in input_files:
+        photos: List[model.Photo] = model.Photo.from_file(input_file)
 
         slideshow: model.Slideshow = solve(photos)
 
+        output_file: Path = output_folder.joinpath(
+          input_file.name.replace("input", "output").replace(
+            ".txt", "{}.txt".format(slideshow.score())
+          )
+        )
         slideshow.save(output_file)
 
 
