@@ -50,15 +50,15 @@ def test_write(example_photos, tmp_path):
 
 
 def test_slideshow_score():
-    scores = [21081, 1416, 412436, 361153]
+    scores_iterator = iter([21081, 1416, 412436, 361153])
+
     _parent_folder = Path(__file__).resolve().parents[1]
 
-    for x in range(1, 5):
-        input_file: Path = _parent_folder.joinpath("in", f"input{x}.txt")
-        solution: Path = _parent_folder.joinpath(
-          "out_submitted", f"output{x}.txt"
-        )
-        assert input_file.exists() and solution.exists()
+    input_files: Path = _parent_folder.joinpath("in").glob("input*txt")
+    solution_files: Path = _parent_folder.joinpath("submitted_outputs"
+                                                   ).glob("output*txt")
+
+    for input_file, solution in zip(input_files, solution_files):
 
         photos = model.Photo.from_file(input_file)
 
@@ -81,7 +81,7 @@ def test_slideshow_score():
 
             slideshow.append(slide)
 
-        assert slideshow.score() == scores[x - 1]
+        assert slideshow.score() == next(scores_iterator)
 
 
 #TODO add test to check output file validity
