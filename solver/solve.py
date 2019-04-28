@@ -65,8 +65,11 @@ def solve(photos: List[model.Photo]) -> model.Slideshow:
             max_score: int = -1
             best_slide: model.Slide = None
 
-            for next_slide in random.sample(slides, min(window_size,
-                                                        len(slides))):
+            sliding_window = random.sample(
+              slides, min(window_size, len(slides))
+            )
+
+            for next_slide in sliding_window:
                 new_score = current_slide.score(next_slide)
                 if new_score > max_score:
                     max_score = new_score
