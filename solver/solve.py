@@ -31,6 +31,21 @@ def _get_vertical_slides(photos: List[model.Photo]
 
         return random.sample(matches, 1)[0]
 
+        # max_score: int = -1
+        # best_photo: model.Slide = None
+
+        # window_size = 2000
+        # sliding_window = random.sample(matches, min(window_size, len(matches)))
+        # for other_photo in sliding_window:
+        #     new_score = model.score_tags(
+        #       photo.tags, other_photo.tags
+        #     ) #XXX this is ugly
+        #     if new_score > max_score:
+        #         max_score = new_score
+        #         best_photo = other_photo
+
+        # return best_photo
+
     while vertical_photos:
         current: model.Photo = vertical_photos.pop()
 
