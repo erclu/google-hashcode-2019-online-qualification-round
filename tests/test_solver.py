@@ -5,7 +5,9 @@ from typing import List
 import pytest
 
 from solver import model
-from solver.solve import _get_horizontal_slides, _get_vertical_slides, solve
+from solver.solve import (
+  _get_horizontal_slides, _get_vertical_slides, do_one, solve
+)
 
 
 @pytest.fixture(scope="session")

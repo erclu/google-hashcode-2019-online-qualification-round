@@ -1,5 +1,6 @@
 import sys
 
+# FIXME not sure this is right
 if __name__ == "__main__":
     from solver.solve import do_one, do_all
 

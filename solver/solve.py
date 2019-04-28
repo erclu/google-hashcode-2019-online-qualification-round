@@ -35,7 +35,7 @@ def _get_vertical_slides(photos: List[model.Photo]
         current: model.Photo = vertical_photos.pop()
 
         if not vertical_photos:
-            break  # handle case with odd number of vertical photos
+            break # handle case with odd number of vertical photos
 
         other: model.Photo = best_match(current, vertical_photos)
 
@@ -59,7 +59,7 @@ def solve(photos: List[model.Photo]) -> model.Slideshow:
 
     slideshow.append(current_slide)
 
-    window_size = 5000  # XXX less than 500 gets bad scores
+    window_size = 5000 # XXX less than 500 gets bad scores
     with tqdm(total=len(slides)) as pbar:
         while slides:
             max_score: int = -1
@@ -90,14 +90,17 @@ def do_all():
 
     input_files = input_folder.glob("input*")
 
-    file: Path
-    for file in input_files:
-        output_file = output_folder/file.name.replace("input", "output")
-
-        photos: List[model.Photo] = model.Photo.from_file(file)
+    input_file: Path
+    for input_file in input_files:
+        photos: List[model.Photo] = model.Photo.from_file(input_file)
 
         slideshow: model.Slideshow = solve(photos)
 
+        output_file: Path = output_folder.joinpath(
+          input_file.name.replace("input", "output").replace(
+            ".txt", "{}.txt".format(slideshow.score())
+          )
+        )
         slideshow.save(output_file)
 
 
