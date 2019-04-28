@@ -49,6 +49,48 @@ def test_write(example_photos, tmp_path):
     slideshow.save(example_out_file)
 
 
+def test_equality():
+    args = [1, "H", {"a", "b", "c"}]
+
+    h_photo_1 = model.Photo(*args)
+    h_photo_1_bis = model.Photo(*args)
+
+    h_photo_2 = model.Photo(2, "H", {"a"})
+
+    h_slide_1 = model.HorizontalSlide(h_photo_1)
+    h_slide_1_bis = model.HorizontalSlide(h_photo_1_bis)
+
+    h_slide_2 = model.HorizontalSlide(h_photo_2)
+
+    assert h_slide_1 == h_slide_1_bis
+    assert h_slide_1 != h_slide_2
+
+    class Dummy: # pylint: disable=too-few-public-methods
+
+        def __init__(self):
+            self.dummy_var = "hello"
+
+    dummy_obj = Dummy()
+
+    assert h_slide_1 != dummy_obj
+
+    args2_a = [1, "V", {"a", "b"}]
+    args2_b = [2, "V", {"b", "c"}]
+    args2_c = [3, "V", {"a", "b", "d"}]
+
+    v_photo_a = model.Photo(*args2_a)
+    v_photo_b = model.Photo(*args2_b)
+
+    v_photo_c = model.Photo(*args2_c)
+
+    v_slide_1 = model.VerticalSlide(v_photo_a, v_photo_b)
+    v_slide_2 = model.VerticalSlide(v_photo_a, v_photo_b)
+    v_slide_3 = model.VerticalSlide(v_photo_a, v_photo_c)
+
+    assert v_slide_1 == v_slide_2
+    assert v_slide_1 != v_slide_3
+
+
 def test_slideshow_score():
     scores_iterator = iter([21081, 1416, 412436, 361153])
 
