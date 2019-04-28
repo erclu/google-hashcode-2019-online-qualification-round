@@ -47,3 +47,15 @@ def test_solve():
     slideshow: model.Slideshow = solve(photos)
 
     assert slideshow.score() == 2
+
+
+#TODO implement
+#TODO add line_profiler to requirements.txt
+@pytest.mark.skip(reason="not implemented")
+def test_profile():
+
+    input2 = Path(__file__).resolve().parents[1].joinpath("in", "input2.txt")
+    assert input2.exists()
+    do_one(input2)
+
+    assert 0
