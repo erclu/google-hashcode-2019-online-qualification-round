@@ -47,7 +47,7 @@ class Slide:
 
     @property
     def tags(self) -> Set[str]:
-        pass
+        raise NotImplementedError
 
     def score(self, other) -> int:
         return score_tags(self.tags, other.tags)
@@ -70,11 +70,8 @@ class HorizontalSlide(Slide):
     def __eq__(self, other) -> bool:
         try:
             return self.photo.photo_id == other.photo.photo_id
-        except AttributeError():
+        except AttributeError:
             return False
-
-    def __ne__(self, other) -> bool:
-        return not self == other
 
     @property
     def tags(self) -> Set[str]:
@@ -100,11 +97,8 @@ class VerticalSlide(Slide):
         try:
             return (self.first.photo_id, self.second.photo_id
                     ) == (other.first.photo_id, other.second.photo_id)
-        except AttributeError():
+        except AttributeError:
             return False
-
-    def __ne__(self, other):
-        return not self == other
 
     @property
     def tags(self) -> Set[str]:
