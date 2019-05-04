@@ -1,29 +1,28 @@
 import random
+import typing
 from pathlib import Path
-# TODO import whole package
-from typing import List
 
 from tqdm import tqdm
 
 from . import model
 
 
-def _get_horizontal_slides(photos: List[model.Photo]
-                           ) -> List[model.HorizontalSlide]:
+def _get_horizontal_slides(photos: typing.List[model.Photo]
+                           ) -> typing.List[model.HorizontalSlide]:
 
     return [
       model.HorizontalSlide(ph) for ph in photos if ph.orientation == "H"
     ]
 
 
-def _get_vertical_slides(photos: List[model.Photo]
-                         ) -> List[model.VerticalSlide]:
+def _get_vertical_slides(photos: typing.List[model.Photo]
+                         ) -> typing.List[model.VerticalSlide]:
     vertical_photos = list(filter(lambda x: x.orientation == "V", photos))
 
-    vertical_slides: List[model.VerticalSlide] = []
+    vertical_slides: typing.List[model.VerticalSlide] = []
 
     def match_vertical_photos(
-      photo: model.Photo, matches: List[model.Photo]
+      photo: model.Photo, matches: typing.List[model.Photo]
     ) -> model.Photo:
         """contains the logic for matching vertical photos into a slide"""
         return random.sample(matches, 1)[0]
@@ -57,9 +56,9 @@ def _get_vertical_slides(photos: List[model.Photo]
     return vertical_slides
 
 
-def solve(photos: List[model.Photo]) -> model.Slideshow:
+def solve(photos: typing.List[model.Photo]) -> model.Slideshow:
 
-    slides: List[model.Slide] = _get_horizontal_slides(photos)
+    slides: typing.List[model.Slide] = _get_horizontal_slides(photos)
     slides.extend(_get_vertical_slides(photos))
     print("------------ made slides from photos ------------")
 
@@ -109,7 +108,7 @@ def do_all():
 
     input_file: Path
     for input_file in input_files:
-        photos: List[model.Photo] = model.Photo.from_file(input_file)
+        photos: typing.List[model.Photo] = model.Photo.from_file(input_file)
 
         slideshow: model.Slideshow = solve(photos)
 
@@ -124,7 +123,7 @@ def do_all():
 def do_one(file: str):
     input_file: Path = Path(file).resolve()
 
-    photos: List[model.Photo] = model.Photo.from_file(input_file)
+    photos: typing.List[model.Photo] = model.Photo.from_file(input_file)
     slideshow: model.Slideshow = solve(photos)
     print(slideshow.score())
 
