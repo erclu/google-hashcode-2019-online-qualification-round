@@ -9,10 +9,29 @@ from . import model
 
 def _get_horizontal_slides(photos: typing.List[model.Photo]
                            ) -> typing.List[model.HorizontalSlide]:
-
     return [
       model.HorizontalSlide(ph) for ph in photos if ph.orientation == "H"
     ]
+
+
+def _match_vertical_photos(
+  photo: model.Photo, matches: typing.List[model.Photo]
+) -> model.Photo:
+    """contains the logic for matching vertical photos into a slide"""
+    return random.sample(matches, 1)[0]
+
+    # max_score: int = -1
+    # best_photo: model.Slide = None
+
+    # window_size = 500
+    # sliding_window = random.sample(matches, min(window_size, len(matches)))
+    # for other_photo in sliding_window:
+    #     new_score = model.score_tags(photo.tags, other_photo.tags)
+    #     if new_score > max_score:
+    #         max_score = new_score
+    #         best_photo = other_photo
+
+    # return best_photo
 
 
 def _get_vertical_slides(photos: typing.List[model.Photo]
@@ -21,25 +40,6 @@ def _get_vertical_slides(photos: typing.List[model.Photo]
 
     vertical_slides: typing.List[model.VerticalSlide] = []
 
-    def match_vertical_photos(
-      photo: model.Photo, matches: typing.List[model.Photo]
-    ) -> model.Photo:
-        """contains the logic for matching vertical photos into a slide"""
-        return random.sample(matches, 1)[0]
-
-        # max_score: int = -1
-        # best_photo: model.Slide = None
-
-        # window_size = 500
-        # sliding_window = random.sample(matches, min(window_size, len(matches)))
-        # for other_photo in sliding_window:
-        #     new_score = model.score_tags(photo.tags, other_photo.tags)
-        #     if new_score > max_score:
-        #         max_score = new_score
-        #         best_photo = other_photo
-
-        # return best_photo
-
     # TODO refactor with itertools!
     while vertical_photos:
         current: model.Photo = vertical_photos.pop(0)
@@ -47,7 +47,7 @@ def _get_vertical_slides(photos: typing.List[model.Photo]
         if not vertical_photos:
             break # handle case with odd number of vertical photos
 
-        other: model.Photo = match_vertical_photos(current, vertical_photos)
+        other: model.Photo = _match_vertical_photos(current, vertical_photos)
 
         vertical_photos.remove(other)
 
