@@ -1,6 +1,7 @@
 import random
 from pathlib import Path
-from typing import List, Set
+# TODO import whole package
+from typing import List
 
 from tqdm import tqdm
 
@@ -8,88 +9,86 @@ from . import model
 
 
 def _get_horizontal_slides(photos: List[model.Photo]
-                           ) -> Set[model.HorizontalSlide]:
+                           ) -> List[model.HorizontalSlide]:
 
-    return {
-      model.HorizontalSlide(ph)
-      for ph in photos
-      if ph.orientation == "H"
-    }
+    return [
+      model.HorizontalSlide(ph) for ph in photos if ph.orientation == "H"
+    ]
 
 
 def _get_vertical_slides(photos: List[model.Photo]
-                         ) -> Set[model.VerticalSlide]:
-    vertical_photos = set(filter(lambda x: x.orientation == "V", photos))
+                         ) -> List[model.VerticalSlide]:
+    vertical_photos = list(filter(lambda x: x.orientation == "V", photos))
 
-    vertical_slides: Set[model.VerticalSlide] = set()
+    vertical_slides: List[model.VerticalSlide] = []
 
-    def best_match(
-      photo: model.Photo, matches: Set[model.Photo]
+    def match_vertical_photos(
+      photo: model.Photo, matches: List[model.Photo]
     ) -> model.Photo:
         """contains the logic for matching vertical photos into a slide"""
-        assert photo
-
         return random.sample(matches, 1)[0]
 
         # max_score: int = -1
         # best_photo: model.Slide = None
 
-        # window_size = 2000
+        # window_size = 500
         # sliding_window = random.sample(matches, min(window_size, len(matches)))
         # for other_photo in sliding_window:
-        #     new_score = model.score_tags(
-        #       photo.tags, other_photo.tags
-        #     ) #XXX this is ugly
+        #     new_score = model.score_tags(photo.tags, other_photo.tags)
         #     if new_score > max_score:
         #         max_score = new_score
         #         best_photo = other_photo
 
         # return best_photo
 
+    # TODO refactor with itertools!
     while vertical_photos:
-        current: model.Photo = vertical_photos.pop()
+        current: model.Photo = vertical_photos.pop(0)
 
         if not vertical_photos:
             break # handle case with odd number of vertical photos
 
-        other: model.Photo = best_match(current, vertical_photos)
+        other: model.Photo = match_vertical_photos(current, vertical_photos)
 
         vertical_photos.remove(other)
 
-        vertical_slides.add(model.VerticalSlide(current, other))
+        vertical_slides.append(model.VerticalSlide(current, other))
 
     return vertical_slides
 
 
 def solve(photos: List[model.Photo]) -> model.Slideshow:
 
-    slides: Set[model.Slide] = _get_horizontal_slides(photos)
-    slides.update(_get_vertical_slides(photos))
+    slides: List[model.Slide] = _get_horizontal_slides(photos)
+    slides.extend(_get_vertical_slides(photos))
     print("------------ made slides from photos ------------")
 
     slideshow: model.Slideshow = model.Slideshow()
 
-    current_slide: model.Slide = random.sample(slides, 1)[0]
-    slides.remove(current_slide)
+    random.shuffle(slides)
+    current_slide: model.Slide = slides.pop(0)
 
     slideshow.append(current_slide)
 
-    window_size = 5000 # XXX less than 500 gets bad scores
+    # XXX less than 500 gets bad scores
+    window_size = 5000
     with tqdm(total=len(slides)) as pbar:
+        #TODO refactor with itertools
         while slides:
             max_score: int = -1
             best_slide: model.Slide = None
 
-            sliding_window = random.sample(
-              slides, min(window_size, len(slides))
-            )
+            sliding_window = slides[:window_size]
 
             for next_slide in sliding_window:
-                new_score = current_slide.score(next_slide)
+                new_score = model.score_tags(
+                  current_slide.tags, next_slide.tags
+                )
                 if new_score > max_score:
                     max_score = new_score
                     best_slide = next_slide
 
+            # XXX this is O(n), but the time spent on this line is low...
             slides.remove(best_slide)
             slideshow.append(best_slide)
 
@@ -135,9 +134,3 @@ def do_one(file: str):
     )
 
     slideshow.save(output_file)
-
-
-#TODO add line_profiler to requirements.txt
-def profile_this():
-    #TODO implement
-    pass

@@ -68,10 +68,9 @@ class HorizontalSlide(Slide):
         return self.photo.photo_id
 
     def __eq__(self, other) -> bool:
-        try:
-            return self.photo.photo_id == other.photo.photo_id
-        except AttributeError:
-            return False
+        return isinstance(
+          other, HorizontalSlide
+        ) and self.photo.photo_id == other.photo.photo_id
 
     @property
     def tags(self) -> Set[str]:
@@ -94,11 +93,9 @@ class VerticalSlide(Slide):
         return hash((self.first.photo_id, self.second.photo_id))
 
     def __eq__(self, other):
-        try:
-            return (self.first.photo_id, self.second.photo_id
-                    ) == (other.first.photo_id, other.second.photo_id)
-        except AttributeError:
-            return False
+        return isinstance(other, VerticalSlide) and (
+          self.first.photo_id, self.second.photo_id
+        ) == (other.first.photo_id, other.second.photo_id)
 
     @property
     def tags(self) -> Set[str]:
