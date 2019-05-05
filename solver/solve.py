@@ -18,25 +18,13 @@ def _match_vertical_photos(
   photo: model.Photo, matches: typing.List[model.Photo]
 ) -> model.Photo:
     """contains the logic for matching vertical photos into a slide"""
-    return random.sample(matches, 1)[0]
-
-    # max_score: int = -1
-    # best_photo: model.Slide = None
-
-    # window_size = 500
-    # sliding_window = random.sample(matches, min(window_size, len(matches)))
-    # for other_photo in sliding_window:
-    #     new_score = model.score_tags(photo.tags, other_photo.tags)
-    #     if new_score > max_score:
-    #         max_score = new_score
-    #         best_photo = other_photo
-
-    # return best_photo
+    return matches[-1]
 
 
 def _get_vertical_slides(photos: typing.List[model.Photo]
                          ) -> typing.List[model.VerticalSlide]:
     vertical_photos = list(filter(lambda x: x.orientation == "V", photos))
+    sorted(vertical_photos, key=lambda ph: len(ph.tags))
 
     vertical_slides: typing.List[model.VerticalSlide] = []
 
@@ -65,6 +53,7 @@ def solve(photos: typing.List[model.Photo]) -> model.Slideshow:
     slideshow: model.Slideshow = model.Slideshow()
 
     random.shuffle(slides)
+    sorted(slides, key=lambda sl: len(sl.tags))
     current_slide: model.Slide = slides.pop(0)
 
     slideshow.append(current_slide)
@@ -96,28 +85,6 @@ def solve(photos: typing.List[model.Photo]) -> model.Slideshow:
             pbar.update()
 
     return slideshow
-
-
-def do_all():
-    _parent_folder: Path = Path(__file__).resolve().parents[1]
-
-    input_folder: Path = _parent_folder.joinpath("in")
-    output_folder: Path = _parent_folder.joinpath("out")
-
-    input_files = input_folder.glob("input*")
-
-    input_file: Path
-    for input_file in input_files:
-        photos: typing.List[model.Photo] = model.Photo.from_file(input_file)
-
-        slideshow: model.Slideshow = solve(photos)
-
-        output_file: Path = output_folder.joinpath(
-          input_file.name.replace("input", "output").replace(
-            ".txt", "{}.txt".format(slideshow.score())
-          )
-        )
-        slideshow.save(output_file)
 
 
 def do_one(file: str):
