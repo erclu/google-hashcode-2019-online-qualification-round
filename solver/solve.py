@@ -100,3 +100,17 @@ def do_one(file: str):
     )
 
     slideshow.save(output_file)
+
+
+def profile_me():
+    import line_profiler
+    lineprof = line_profiler.LineProfiler()
+    wrapped_solve = lineprof(solve)
+
+    input2 = Path(__file__).resolve().parents[1].joinpath("in", "input2.txt")
+    photos: typing.List[model.Photo] = model.Photo.from_file(input2)
+    slideshow: model.Slideshow = wrapped_solve(photos)
+
+    print(slideshow.score())
+
+    lineprof.print_stats()
