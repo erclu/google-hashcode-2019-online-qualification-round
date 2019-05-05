@@ -9,9 +9,12 @@ out_do_one/
 __pycache__
 env
 
-# python tests
-.pytest_*
-
-# python coverage
+# python coverage stuff
 .coverage_report
 .coverage
+
+# pytest stuff
+.pytest_*
+
+#mypy stuff
+.mypy_cache
