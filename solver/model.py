@@ -86,8 +86,7 @@ class VerticalSlide(Slide):
         self.first: Photo = first_photo
         self.second: Photo = second_photo
 
-    def __repr__(self):
-        return f"{self.first} {self.second}"
+        return "{} {}".format(self.first,self.second)
 
     def __hash__(self):
         return hash((self.first.photo_id, self.second.photo_id))
@@ -112,9 +111,8 @@ class Slideshow:
         return str(self.slides)
 
     def to_string(self) -> str:
-        return f"{len(self.slides)}\n" + "\n".join(
-          str(x) for x in self.slides
-        ) + "\n"
+        return "{}\n".format(len(self.slides)
+                             ) + "\n".join(str(x) for x in self.slides) + "\n"
 
     def save(self, filename: Path) -> None:
         filename.write_text(self.to_string(), encoding="UTF-8")

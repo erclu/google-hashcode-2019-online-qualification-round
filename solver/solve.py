@@ -96,7 +96,8 @@ def do_one(file: str):
 
     input_name: str = input_file.name.replace(".txt", "")
     output_file: Path = Path.cwd().joinpath(
-      "out_do_one", f"out-from_{input_name}-score_{slideshow.score()}.txt"
+      "out_do_one",
+      "out-from_{}-score_{}.txt".format(input_name, slideshow.score())
     )
 
     slideshow.save(output_file)
