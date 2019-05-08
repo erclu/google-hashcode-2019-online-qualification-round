@@ -92,6 +92,8 @@ def test_equality():
 
 
 def test_slideshow_score():
+    """uses submitted files to check that score function works correctly
+    """
     scores_iterator = iter([21081, 1416, 412436, 361153])
 
     _parent_folder = Path(__file__).resolve().parents[1]
@@ -112,14 +114,15 @@ def test_slideshow_score():
             if " " not in str_index:
                 index = int(str_index)
                 photo: model.Photo = photos[index]
-                assert photo.photo_id == index
+                assert int(photo.photo_id) == index
                 slide: model.HorizontalSlide = model.HorizontalSlide(photo)
             else:
                 i, j = [int(x) for x in str_index.split(" ")]
                 slide: model.VerticalSlide = model.VerticalSlide(
                   photos[i], photos[j]
                 )
-                assert slide.first.photo_id == i and slide.second.photo_id == j
+                assert int(slide.first.photo_id
+                           ) == i and int(slide.second.photo_id) == j
 
             slideshow.append(slide)
 
