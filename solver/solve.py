@@ -49,8 +49,9 @@ def _get_vertical_slides(photos: typing.List[model.Photo]
 
 def solve(photos: typing.List[model.Photo]) -> model.Slideshow:
 
-    slides: typing.List[model.Slide] = _get_horizontal_slides(photos)
-    slides.extend(_get_vertical_slides(photos))
+    slides: typing.List[model.Slide] = (
+      _get_horizontal_slides(photos) + _get_vertical_slides(photos)
+    )
     print("------------ made slides from photos ------------")
 
     slideshow: model.Slideshow = model.Slideshow()
@@ -83,7 +84,7 @@ def solve(photos: typing.List[model.Photo]) -> model.Slideshow:
     return slideshow
 
 
-def do_one(file: str):
+def do_one(file: str) -> None:
     input_file: Path = Path(file).resolve()
 
     photos: typing.List[model.Photo] = model.Photo.from_file(input_file)
@@ -99,7 +100,7 @@ def do_one(file: str):
     slideshow.save(output_file)
 
 
-def profile_me():
+def profile_me() -> None:
     import line_profiler
     lineprof = line_profiler.LineProfiler()
     wrapped_solve = lineprof(solve)

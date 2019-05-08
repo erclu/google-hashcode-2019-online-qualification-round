@@ -1,5 +1,8 @@
+# this is needed in order to correctly type hint classes
+from __future__ import annotations
+
 from pathlib import Path
-from typing import List, Set
+from typing import List, Set, Any
 
 
 def score_tags(first: Set[str], second: Set[str]) -> int:
@@ -12,15 +15,16 @@ def score_tags(first: Set[str], second: Set[str]) -> int:
 class Photo:
 
     def __init__(self, photo_id: str, orientation: str, tags: Set[str]):
-        self.photo_id: str = photo_id
-        self.orientation: str = orientation
-        self.tags: Set[str] = tags
+        #FIXME SHOULD THIS BE INT?
+        self.photo_id = photo_id
+        self.orientation = orientation
+        self.tags = tags
 
     def __repr__(self):
         return str(self.photo_id)
 
     @classmethod
-    def from_str(cls, photo_id: int, line: str):
+    def from_str(cls, photo_id: int, line: str) -> Photo:
         args: List[str] = line.split(" ")
 
         orientation: str = args[0]
@@ -31,10 +35,10 @@ class Photo:
         tags: Set[str] = set(args[2:])
         assert len(tags) == int(args[1]), "not all tags were found"
 
-        return cls(photo_id, orientation, tags)
+        return cls(str(photo_id), orientation, tags)
 
     @staticmethod
-    def from_file(filename: Path):
+    def from_file(filename: Path) -> List[Photo]:
         content = filename.read_text()
 
         # drop first and last line in file
@@ -49,13 +53,13 @@ class Slide:
     def tags(self) -> Set[str]:
         raise NotImplementedError
 
-    def score(self, other) -> int:
+    def score(self, other: Slide) -> int:
         return score_tags(self.tags, other.tags)
 
 
 class HorizontalSlide(Slide):
 
-    def __init__(self, photo):
+    def __init__(self, photo: Photo):
         assert photo.orientation == "H", (
           "wrong orientation for this slide type"
         )
@@ -65,9 +69,9 @@ class HorizontalSlide(Slide):
         return str(self.photo.photo_id)
 
     def __hash__(self):
-        return self.photo.photo_id
+        return int(self.photo.photo_id)
 
-    def __eq__(self, other) -> bool:
+    def __eq__(self, other: Any):
         return isinstance(
           other, HorizontalSlide
         ) and self.photo.photo_id == other.photo.photo_id
@@ -86,12 +90,13 @@ class VerticalSlide(Slide):
         self.first: Photo = first_photo
         self.second: Photo = second_photo
 
-        return "{} {}".format(self.first,self.second)
+    def __repr__(self):
+        return "{} {}".format(self.first, self.second)
 
     def __hash__(self):
         return hash((self.first.photo_id, self.second.photo_id))
 
-    def __eq__(self, other):
+    def __eq__(self, other: Any):
         return isinstance(other, VerticalSlide) and (
           self.first.photo_id, self.second.photo_id
         ) == (other.first.photo_id, other.second.photo_id)
@@ -126,7 +131,7 @@ class Slideshow:
         return self._score
 
     @classmethod
-    def from_list(cls, slides_list):
+    def from_list(cls, slides_list: List[Slide]) -> Slideshow:
         slideshow = cls()
 
         for slide in slides_list:
