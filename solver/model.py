@@ -1,5 +1,4 @@
-# this is needed in order to correctly type hint classes
-from __future__ import annotations
+from __future__ import annotations # ref PEP 563
 
 import typing
 from pathlib import Path
@@ -14,14 +13,15 @@ def score_tags(first: typing.Set[str], second: typing.Set[str]) -> int:
 
 class Photo:
 
-    # FIXME if i remove type from a parameter mypy does not throw an error
-    def __init__(self, photo_id: str, orientation: str, tags: typing.Set[str]):
+    def __init__(
+      self, photo_id: str, orientation: str, tags: typing.Set[str]
+    ) -> None:
         #FIXME SHOULD THIS BE INT?
         self.photo_id = photo_id
         self.orientation = orientation
         self.tags = tags
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return str(self.photo_id)
 
     @classmethod
@@ -60,19 +60,19 @@ class Slide:
 
 class HorizontalSlide(Slide):
 
-    def __init__(self, photo: Photo):
+    def __init__(self, photo: Photo) -> None:
         assert photo.orientation == "H", (
           "wrong orientation for this slide type"
         )
         self.photo = photo
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return str(self.photo.photo_id)
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return int(self.photo.photo_id)
 
-    def __eq__(self, other: typing.Any):
+    def __eq__(self, other: typing.Any) -> bool:
         return isinstance(
           other, HorizontalSlide
         ) and self.photo.photo_id == other.photo.photo_id
@@ -84,20 +84,20 @@ class HorizontalSlide(Slide):
 
 class VerticalSlide(Slide):
 
-    def __init__(self, first_photo: Photo, second_photo: Photo):
+    def __init__(self, first_photo: Photo, second_photo: Photo) -> None:
         assert (
           first_photo.orientation == "V" and second_photo.orientation == "V"
         ), ("wrong orientation for this slide type")
         self.first: Photo = first_photo
         self.second: Photo = second_photo
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "{} {}".format(self.first, self.second)
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return hash((self.first.photo_id, self.second.photo_id))
 
-    def __eq__(self, other: typing.Any):
+    def __eq__(self, other: typing.Any) -> bool:
         return isinstance(other, VerticalSlide) and (
           self.first.photo_id, self.second.photo_id
         ) == (other.first.photo_id, other.second.photo_id)
@@ -109,11 +109,11 @@ class VerticalSlide(Slide):
 
 class Slideshow:
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.slides: typing.List[Slide] = []
         self._score = 0
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return str(self.slides)
 
     def to_string(self) -> str:
