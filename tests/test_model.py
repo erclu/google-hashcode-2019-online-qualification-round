@@ -91,6 +91,7 @@ def test_equality():
     assert v_slide_1 != v_slide_3
 
 
+@pytest.mark.slow
 def test_slideshow_score():
     """uses submitted files to check that score function works correctly
     """

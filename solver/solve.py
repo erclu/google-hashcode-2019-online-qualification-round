@@ -1,5 +1,6 @@
 import random
 import typing
+from itertools import islice
 from pathlib import Path
 
 from tqdm import tqdm
@@ -18,6 +19,8 @@ def _match_vertical_photos(
   photo: model.Photo, matches: typing.List[model.Photo]
 ) -> model.Photo:
     """contains the logic for matching vertical photos into a slide"""
+    assert photo # avoid pylint unused-argument
+
     return matches[-1]
 
 
@@ -30,7 +33,7 @@ def _get_vertical_slides(photos: typing.List[model.Photo]
 
     # TODO refactor with itertools!
     while vertical_photos:
-        current: model.Photo = vertical_photos.pop(0)
+        current: model.Photo = vertical_photos.pop()
 
         if not vertical_photos:
             break # handle case with odd number of vertical photos
@@ -63,20 +66,13 @@ def solve(photos: typing.List[model.Photo]) -> model.Slideshow:
     with tqdm(total=len(slides)) as pbar:
         #TODO refactor with itertools
         while slides:
-            max_score: int = -1
-            best_slide: model.Slide = None
+            sliding_window = islice(slides, window_size)
 
-            sliding_window = slides[:window_size]
+            best_slide: model.Slide = max(
+              sliding_window,
+              key=lambda sl: model.score_tags(current_slide.tags, sl.tags)
+            )
 
-            for next_slide in sliding_window:
-                new_score = model.score_tags(
-                  current_slide.tags, next_slide.tags
-                )
-                if new_score > max_score:
-                    max_score = new_score
-                    best_slide = next_slide
-
-            # XXX this is O(n), but the time spent on this line is low...
             slides.remove(best_slide)
             slideshow.append(best_slide)
 
