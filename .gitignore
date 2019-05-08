@@ -1,13 +1,9 @@
-out/
-out_do_one/
-
 # vs code stuff
 .vscode
 *.code-workspace
 
 # python stuff
 __pycache__
-env
 
 # python coverage stuff
 .coverage_report
@@ -18,3 +14,7 @@ env
 
 #mypy stuff
 .mypy_cache
+
+# project specific
+out/
+out_do_one/

@@ -1,0 +1,21 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+mypy = "*"
+pylint = "*"
+pytest = "*"
+pytest-cov = "*"
+pytest-instafail = "*"
+pytest-spec = "*"
+rope = "*"
+yapf = "*"
+
+[packages]
+line-profiler = {path = "./../_libraries-wheels-and-stuff/line_profiler-2.1.2-cp37-cp37m-win_amd64.whl"}
+tqdm = "*"
+
+[requires]
+python_version = "3.7"
