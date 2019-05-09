@@ -15,15 +15,6 @@ def _get_horizontal_slides(photos: typing.List[model.Photo]
     ]
 
 
-def _match_vertical_photos(
-  photo: model.Photo, matches: typing.List[model.Photo]
-) -> model.Photo:
-    """contains the logic for matching vertical photos into a slide"""
-    assert photo # avoid pylint unused-argument
-
-    return matches[-1]
-
-
 def _get_vertical_slides(photos: typing.List[model.Photo]
                          ) -> typing.List[model.VerticalSlide]:
     vertical_photos = list(filter(lambda x: x.orientation == "V", photos))
@@ -33,14 +24,14 @@ def _get_vertical_slides(photos: typing.List[model.Photo]
 
     # TODO refactor with itertools!
     while vertical_photos:
-        current: model.Photo = vertical_photos.pop()
+        current = vertical_photos.pop(0)
 
         if not vertical_photos:
             break # handle case with odd number of vertical photos
 
-        other: model.Photo = _match_vertical_photos(current, vertical_photos)
-
-        vertical_photos.remove(other)
+        other = vertical_photos.pop()
+        # other = random.choice(vertical_photos)
+        # vertical_photos.remove(other)
 
         vertical_slides.append(model.VerticalSlide(current, other))
 
@@ -57,14 +48,15 @@ def solve(photos: typing.List[model.Photo]) -> model.Slideshow:
     slideshow: model.Slideshow = model.Slideshow()
 
     random.shuffle(slides)
-    sorted(slides, key=lambda sl: len(sl.tags))
+    # sorted(slides, key=lambda slide: len(slide.tags), reverse=True)
+    # sorted(slides, key=lambda slide: len(slide.tags))
     current_slide: model.Slide = slides.pop(0)
 
     slideshow.append(current_slide)
 
-    # XXX less than 500 gets bad scores
-    window_size = 5000
-    with tqdm(total=len(slides)) as pbar:
+    # less than 500 gets awful scores
+    window_size = 2000
+    with tqdm(total=len(slides), ascii=True) as pbar:
         #TODO refactor with itertools
         while slides:
             sliding_window = islice(slides, window_size)
