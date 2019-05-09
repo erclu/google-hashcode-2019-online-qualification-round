@@ -14,9 +14,8 @@ def score_tags(first: typing.Set[str], second: typing.Set[str]) -> int:
 class Photo:
 
     def __init__(
-      self, photo_id: str, orientation: str, tags: typing.Set[str]
+      self, photo_id: int, orientation: str, tags: typing.Set[str]
     ) -> None:
-        #FIXME SHOULD THIS BE INT?
         self.photo_id = photo_id
         self.orientation = orientation
         self.tags = tags
@@ -36,7 +35,7 @@ class Photo:
         tags: typing.Set[str] = set(args[2:])
         assert len(tags) == int(args[1]), "not all tags were found"
 
-        return cls(str(photo_id), orientation, tags)
+        return cls(photo_id, orientation, tags)
 
     @staticmethod
     def from_file(filename: Path) -> typing.List[Photo]:
@@ -70,7 +69,7 @@ class HorizontalSlide(Slide):
         return str(self.photo.photo_id)
 
     def __hash__(self) -> int:
-        return int(self.photo.photo_id)
+        return self.photo.photo_id
 
     def __eq__(self, other: typing.Any) -> bool:
         return isinstance(
