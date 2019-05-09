@@ -83,23 +83,27 @@ class HorizontalSlide(Slide):
 
 class VerticalSlide(Slide):
 
-    def __init__(self, first_photo: Photo, second_photo: Photo) -> None:
-        assert (
-          first_photo.orientation == "V" and second_photo.orientation == "V"
-        ), ("wrong orientation for this slide type")
-        self.first: Photo = first_photo
-        self.second: Photo = second_photo
+    def __init__(self, first: Photo, second: Photo) -> None:
+        assert first.orientation == "V" and second.orientation == "V", (
+          "wrong orientation for this slide type"
+        )
+        self.first = first
+        self.second = second
 
     def __repr__(self) -> str:
         return "{} {}".format(self.first, self.second)
 
     def __hash__(self) -> int:
-        return hash((self.first.photo_id, self.second.photo_id))
+        this_id = tuple(sorted((self.first.photo_id, self.second.photo_id)))
+        return hash(this_id)
 
     def __eq__(self, other: typing.Any) -> bool:
-        return isinstance(other, VerticalSlide) and (
-          self.first.photo_id, self.second.photo_id
-        ) == (other.first.photo_id, other.second.photo_id)
+        if not isinstance(other, VerticalSlide):
+            return False
+        this_id = tuple(sorted((self.first.photo_id, self.second.photo_id)))
+        other_id = tuple(sorted((other.first.photo_id, other.second.photo_id)))
+
+        return this_id == other_id
 
     @property
     def tags(self) -> typing.Set[str]:
