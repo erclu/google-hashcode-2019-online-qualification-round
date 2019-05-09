@@ -7,6 +7,9 @@ from tqdm import tqdm
 
 from . import model
 
+WINDOW_SIZE = 2000
+VERTICAL_WINDOW_SIZE = 2000
+
 
 def _get_horizontal_slides(photos: typing.List[model.Photo]
                            ) -> typing.List[model.HorizontalSlide]:
@@ -40,26 +43,30 @@ def _get_vertical_slides(photos: typing.List[model.Photo]
 
 def solve(photos: typing.List[model.Photo]) -> model.Slideshow:
 
+    h_slides: typing.List[model.HorizontalSlide] = (
+      _get_horizontal_slides(photos)
+    )
+    v_slides: typing.List[model.VerticalSlide] = _get_vertical_slides(photos)
+
     slides: typing.List[model.Slide] = (
-      _get_horizontal_slides(photos) + _get_vertical_slides(photos)
+      typing.cast(typing.List[model.Slide], h_slides) +
+      typing.cast(typing.List[model.Slide], v_slides)
     )
     print("------------ made slides from photos ------------")
 
     slideshow: model.Slideshow = model.Slideshow()
 
-    random.shuffle(slides)
+    # random.shuffle(slides)
     # sorted(slides, key=lambda slide: len(slide.tags), reverse=True)
     # sorted(slides, key=lambda slide: len(slide.tags))
     current_slide: model.Slide = slides.pop(0)
 
     slideshow.append(current_slide)
 
-    # less than 500 gets awful scores
-    window_size = 2000
     with tqdm(total=len(slides), ascii=True) as pbar:
         #TODO refactor with itertools
         while slides:
-            sliding_window = islice(slides, window_size)
+            sliding_window = islice(slides, WINDOW_SIZE)
 
             best_slide: model.Slide = max(
               sliding_window,
