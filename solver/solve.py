@@ -11,72 +11,55 @@ WINDOW_SIZE = 2000
 VERTICAL_WINDOW_SIZE = 2000
 
 
-def _get_horizontal_slides(photos: typing.List[model.Photo]
-                           ) -> typing.List[model.HorizontalSlide]:
-    return [
-      model.HorizontalSlide(ph) for ph in photos if ph.orientation == "H"
-    ]
-
-
-def _get_vertical_slides(photos: typing.List[model.Photo]
-                         ) -> typing.List[model.VerticalSlide]:
-    vertical_photos = list(filter(lambda x: x.orientation == "V", photos))
-    sorted(vertical_photos, key=lambda ph: len(ph.tags))
-
-    vertical_slides: typing.List[model.VerticalSlide] = []
-
-    # TODO refactor with itertools!
-    while vertical_photos:
-        current = vertical_photos.pop(0)
-
-        if not vertical_photos:
-            break # handle case with odd number of vertical photos
-
-        other = vertical_photos.pop()
-        # other = random.choice(vertical_photos)
-        # vertical_photos.remove(other)
-
-        vertical_slides.append(model.VerticalSlide(current, other))
-
-    return vertical_slides
-
-
 def solve(photos: typing.List[model.Photo]) -> model.Slideshow:
-
-    h_slides: typing.List[model.HorizontalSlide] = (
-      _get_horizontal_slides(photos)
-    )
-    v_slides: typing.List[model.VerticalSlide] = _get_vertical_slides(photos)
-
-    slides: typing.List[model.Slide] = (
-      typing.cast(typing.List[model.Slide], h_slides) +
-      typing.cast(typing.List[model.Slide], v_slides)
-    )
-    print("------------ made slides from photos ------------")
-
     slideshow: model.Slideshow = model.Slideshow()
 
-    # random.shuffle(slides)
-    # sorted(slides, key=lambda slide: len(slide.tags), reverse=True)
-    # sorted(slides, key=lambda slide: len(slide.tags))
-    current_slide: model.Slide = slides.pop(0)
+    current_slide: model.Slide
+
+    random.shuffle(photos)
+    # sorted(photos, key=lambda photo: len(photo.tags))
+    first_photo: model.Photo = photos.pop(0)
+
+    if first_photo.orientation == "H":
+        current_slide = model.HorizontalSlide(first_photo)
+    else:
+        second_photo = next(filter(lambda x: x.orientation == "V", photos))
+        photos.remove(second_photo)
+
+        current_slide = model.VerticalSlide(first_photo, second_photo)
 
     slideshow.append(current_slide)
 
-    with tqdm(total=len(slides), ascii=True) as pbar:
-        #TODO refactor with itertools
-        while slides:
-            sliding_window = islice(slides, WINDOW_SIZE)
-
-            best_slide: model.Slide = max(
+    with tqdm(total=len(photos), ascii=True) as pbar:
+        while photos:
+            sliding_window = islice(photos, WINDOW_SIZE)
+            best_photo: model.Photo = max(
               sliding_window,
-              key=lambda sl: model.score_tags(current_slide.tags, sl.tags)
+              key=lambda ph: model.score_tags(current_slide.tags, ph.tags)
             )
+            photos.remove(best_photo)
 
-            slides.remove(best_slide)
-            slideshow.append(best_slide)
+            best_slide: model.Slide
+            if best_photo.orientation == "H":
+                best_slide = model.HorizontalSlide(best_photo)
+            else:
+                vertical_photos_window = islice(
+                  filter(lambda x: x.orientation == "V", photos),
+                  VERTICAL_WINDOW_SIZE
+                )
+                other_best_photo: model.Photo = max(
+                  vertical_photos_window,
+                  key=lambda ph: model.score_tags(current_slide.tags, ph.tags)
+                )
+                photos.remove(other_best_photo)
+
+                pbar.update()
+
+                best_slide = model.VerticalSlide(best_photo, other_best_photo)
 
             current_slide = best_slide
+            slideshow.append(best_slide)
+
             pbar.set_postfix_str(s="score: " + str(slideshow.score()))
             pbar.update()
 
