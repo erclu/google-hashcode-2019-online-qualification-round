@@ -1,13 +1,18 @@
 [run]
 branch = True
+; TODO should i check the coverage of the tests themselves?
 omit =
     tests/*
-    env/*
+; data_file = ?????
 
 [report]
 exclude_lines =
     # Don't complain if tests don't hit defensive assertion code:
-    def __repr__
     raise AssertionError
     raise NotImplementedError
+    def __repr__
     if __name__ == .__main__.:
+skip_covered = True
+
+[html]
+directory = .coverage_report

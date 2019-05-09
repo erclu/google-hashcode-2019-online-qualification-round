@@ -1,94 +1,78 @@
 import random
+import typing
+from itertools import islice
 from pathlib import Path
-# TODO import whole package
-from typing import List
 
 from tqdm import tqdm
 
 from . import model
 
+WINDOW_SIZE = 2000
+VERTICAL_WINDOW_SIZE = 2000
 
-def _get_horizontal_slides(photos: List[model.Photo]
-                           ) -> List[model.HorizontalSlide]:
 
+def _get_horizontal_slides(photos: typing.List[model.Photo]
+                           ) -> typing.List[model.HorizontalSlide]:
     return [
       model.HorizontalSlide(ph) for ph in photos if ph.orientation == "H"
     ]
 
 
-def _get_vertical_slides(photos: List[model.Photo]
-                         ) -> List[model.VerticalSlide]:
+def _get_vertical_slides(photos: typing.List[model.Photo]
+                         ) -> typing.List[model.VerticalSlide]:
     vertical_photos = list(filter(lambda x: x.orientation == "V", photos))
+    sorted(vertical_photos, key=lambda ph: len(ph.tags))
 
-    vertical_slides: List[model.VerticalSlide] = []
-
-    def match_vertical_photos(
-      photo: model.Photo, matches: List[model.Photo]
-    ) -> model.Photo:
-        """contains the logic for matching vertical photos into a slide"""
-        return random.sample(matches, 1)[0]
-
-        # max_score: int = -1
-        # best_photo: model.Slide = None
-
-        # window_size = 500
-        # sliding_window = random.sample(matches, min(window_size, len(matches)))
-        # for other_photo in sliding_window:
-        #     new_score = model.score_tags(photo.tags, other_photo.tags)
-        #     if new_score > max_score:
-        #         max_score = new_score
-        #         best_photo = other_photo
-
-        # return best_photo
+    vertical_slides: typing.List[model.VerticalSlide] = []
 
     # TODO refactor with itertools!
     while vertical_photos:
-        current: model.Photo = vertical_photos.pop(0)
+        current = vertical_photos.pop(0)
 
         if not vertical_photos:
             break # handle case with odd number of vertical photos
 
-        other: model.Photo = match_vertical_photos(current, vertical_photos)
-
-        vertical_photos.remove(other)
+        other = vertical_photos.pop()
+        # other = random.choice(vertical_photos)
+        # vertical_photos.remove(other)
 
         vertical_slides.append(model.VerticalSlide(current, other))
 
     return vertical_slides
 
 
-def solve(photos: List[model.Photo]) -> model.Slideshow:
+def solve(photos: typing.List[model.Photo]) -> model.Slideshow:
 
-    slides: List[model.Slide] = _get_horizontal_slides(photos)
-    slides.extend(_get_vertical_slides(photos))
+    h_slides: typing.List[model.HorizontalSlide] = (
+      _get_horizontal_slides(photos)
+    )
+    v_slides: typing.List[model.VerticalSlide] = _get_vertical_slides(photos)
+
+    slides: typing.List[model.Slide] = (
+      typing.cast(typing.List[model.Slide], h_slides) +
+      typing.cast(typing.List[model.Slide], v_slides)
+    )
     print("------------ made slides from photos ------------")
 
     slideshow: model.Slideshow = model.Slideshow()
 
-    random.shuffle(slides)
+    # random.shuffle(slides)
+    # sorted(slides, key=lambda slide: len(slide.tags), reverse=True)
+    # sorted(slides, key=lambda slide: len(slide.tags))
     current_slide: model.Slide = slides.pop(0)
 
     slideshow.append(current_slide)
 
-    # XXX less than 500 gets bad scores
-    window_size = 5000
-    with tqdm(total=len(slides)) as pbar:
+    with tqdm(total=len(slides), ascii=True) as pbar:
         #TODO refactor with itertools
         while slides:
-            max_score: int = -1
-            best_slide: model.Slide = None
+            sliding_window = islice(slides, WINDOW_SIZE)
 
-            sliding_window = slides[:window_size]
+            best_slide: model.Slide = max(
+              sliding_window,
+              key=lambda sl: model.score_tags(current_slide.tags, sl.tags)
+            )
 
-            for next_slide in sliding_window:
-                new_score = model.score_tags(
-                  current_slide.tags, next_slide.tags
-                )
-                if new_score > max_score:
-                    max_score = new_score
-                    best_slide = next_slide
-
-            # XXX this is O(n), but the time spent on this line is low...
             slides.remove(best_slide)
             slideshow.append(best_slide)
 
@@ -99,38 +83,31 @@ def solve(photos: List[model.Photo]) -> model.Slideshow:
     return slideshow
 
 
-def do_all():
-    _parent_folder: Path = Path(__file__).resolve().parents[1]
-
-    input_folder: Path = _parent_folder.joinpath("in")
-    output_folder: Path = _parent_folder.joinpath("out")
-
-    input_files = input_folder.glob("input*")
-
-    input_file: Path
-    for input_file in input_files:
-        photos: List[model.Photo] = model.Photo.from_file(input_file)
-
-        slideshow: model.Slideshow = solve(photos)
-
-        output_file: Path = output_folder.joinpath(
-          input_file.name.replace("input", "output").replace(
-            ".txt", "{}.txt".format(slideshow.score())
-          )
-        )
-        slideshow.save(output_file)
-
-
-def do_one(file: str):
+def do_one(file: str) -> None:
     input_file: Path = Path(file).resolve()
 
-    photos: List[model.Photo] = model.Photo.from_file(input_file)
+    photos: typing.List[model.Photo] = model.Photo.from_file(input_file)
     slideshow: model.Slideshow = solve(photos)
     print(slideshow.score())
 
     input_name: str = input_file.name.replace(".txt", "")
     output_file: Path = Path.cwd().joinpath(
-      "out_do_one", f"out-from_{input_name}-score_{slideshow.score()}.txt"
+      "out_do_one",
+      "out-from_{}-score_{}.txt".format(input_name, slideshow.score())
     )
 
     slideshow.save(output_file)
+
+
+def profile_me() -> None:
+    import line_profiler
+    lineprof = line_profiler.LineProfiler()
+    wrapped_solve = lineprof(solve)
+
+    input2 = Path(__file__).resolve().parents[1].joinpath("in", "input2.txt")
+    photos: typing.List[model.Photo] = model.Photo.from_file(input2)
+    slideshow: model.Slideshow = wrapped_solve(photos)
+
+    print(slideshow.score())
+
+    lineprof.print_stats()
