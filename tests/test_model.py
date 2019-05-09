@@ -89,6 +89,24 @@ def test_equality() -> None:
     assert v_slide_1 != model.VerticalSlide(v_photo_a, v_photo_c)
 
 
+def test_slotted() -> None:
+    h_photo = model.Photo(1, "H", {"a", "b", "c"})
+    v_photo_1 = model.Photo(1, "V", {"a", "b"})
+    v_photo_2 = model.Photo(2, "V", {"b", "c"})
+
+    my_classes = (
+      h_photo,
+      model.HorizontalSlide(h_photo),
+      model.VerticalSlide(v_photo_1, v_photo_2),
+      model.Slideshow(),
+    )
+
+    for my_class in my_classes:
+        assert my_class.__slots__
+        with pytest.raises(AttributeError):
+            assert my_class.__dict__
+
+
 @pytest.mark.slow
 def test_slideshow_score() -> None:
     """uses submitted files to check that score function works correctly

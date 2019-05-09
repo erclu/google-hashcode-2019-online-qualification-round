@@ -12,6 +12,11 @@ def score_tags(first: typing.Set[str], second: typing.Set[str]) -> int:
 
 
 class Photo:
+    __slots__ = (
+      "photo_id",
+      "orientation",
+      "tags",
+    )
 
     def __init__(
       self, photo_id: int, orientation: str, tags: typing.Set[str]
@@ -48,6 +53,7 @@ class Photo:
 
 
 class Slide:
+    __slots__ = ()
 
     @property
     def tags(self) -> typing.Set[str]:
@@ -58,6 +64,7 @@ class Slide:
 
 
 class HorizontalSlide(Slide):
+    __slots__ = ("photo", )
 
     def __init__(self, photo: Photo) -> None:
         assert photo.orientation == "H", (
@@ -82,6 +89,10 @@ class HorizontalSlide(Slide):
 
 
 class VerticalSlide(Slide):
+    __slots__ = (
+      "first",
+      "second",
+    )
 
     def __init__(self, first: Photo, second: Photo) -> None:
         assert first.orientation == "V" and second.orientation == "V", (
@@ -111,6 +122,10 @@ class VerticalSlide(Slide):
 
 
 class Slideshow:
+    __slots__ = (
+      "slides",
+      "_score",
+    )
 
     def __init__(self) -> None:
         self.slides: typing.List[Slide] = []
