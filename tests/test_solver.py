@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 
 from solver import model
-from solver.solve import _get_horizontal_slides, _get_vertical_slides, solve
+from solver.solve import solve
 
 
 @pytest.fixture(scope="session")
@@ -14,25 +14,6 @@ def input2_photos_list() -> typing.List[model.Photo]:
     assert file.exists()
 
     return model.Photo.from_file(file)
-
-
-def test_get_slides(input2_photos_list: typing.List[model.Photo]) -> None:
-    photos = input2_photos_list
-
-    hor_slides = _get_horizontal_slides(photos)
-    assert len(hor_slides) == 500
-
-    ver_slides = _get_vertical_slides(photos)
-    assert len(ver_slides) == 250
-
-    for h_slide in hor_slides:
-        assert h_slide.photo.orientation == "H"
-
-    for v_slide in ver_slides:
-        assert (
-          v_slide.first.orientation == "V" and
-          v_slide.second.orientation == "V"
-        )
 
 
 def test_solve() -> None:
