@@ -11,11 +11,9 @@
       "**/__pycache__": true,
       "pipfile.lock": false,
     },
-    "python.pythonPath": "C:\\Users\\Luca\\.virtualenvs\\hashcode-oqr-wEhBfEIU\\Scripts\\python.exe",
+    "python.pythonPath": "D:\\Users\\erclu\\.virtualenvs\\hashcode-oqr-JnGtIKpN\\Scripts\\python.exe",
     "python.analysis.openFilesOnly": false,
     "python.linting.mypyEnabled": true,
-    "python.linting.pylintEnabled": true,
     "python.testing.pyTestEnabled": true,
-    "python.terminal.activateEnvironment": true,
   }
 }
