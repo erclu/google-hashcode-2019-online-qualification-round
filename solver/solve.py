@@ -49,7 +49,9 @@ def solve(photos: typing.List[model.Photo]) -> model.Slideshow:
                 )
                 other_best_photo: model.Photo = max(
                   vertical_photos_window,
-                  key=lambda ph: model.score_tags(current_slide.tags, ph.tags)
+                  key=lambda ph: model.score_tags(
+                    current_slide.tags, ph.tags.union(best_photo.tags)
+                  )
                 )
                 photos.remove(other_best_photo)
 
