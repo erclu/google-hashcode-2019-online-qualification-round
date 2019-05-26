@@ -7,6 +7,14 @@ from tqdm import tqdm
 
 from . import model
 
+# max points with:
+# WINDOW_SIZE = 10000
+# VERTICAL_WINDOW_SIZE = 10000
+#
+# input1 109359
+# input2 1749
+# input3 387601 XXX still bad
+# input4 495386
 WINDOW_SIZE = 2000
 VERTICAL_WINDOW_SIZE = 2000
 
