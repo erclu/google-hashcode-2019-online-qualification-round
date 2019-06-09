@@ -13,7 +13,7 @@ from . import model
 #
 # input1 109359
 # input2 1749
-# input3 387601 XXX still bad
+# input3 387601 XXX still bad. reversing the sort order helps minorly (?)
 # input4 495386
 WINDOW_SIZE = 2000
 
@@ -25,6 +25,9 @@ def solve(photos: typing.List[model.Photo]) -> model.Slideshow:
 
     random.shuffle(photos)
     first_photo: model.Photo = photos.pop(0)
+    # sorted(photos, key=lambda photo: len(photo.tags), reverse=True)
+    # first_photo: model.Photo = random.choice(photos)
+    # photos.remove(first_photo)
 
     if first_photo.orientation == "H":
         current_slide = model.HorizontalSlide(first_photo)
