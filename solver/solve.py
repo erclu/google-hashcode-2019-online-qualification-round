@@ -16,7 +16,6 @@ from . import model
 # input3 387601 XXX still bad
 # input4 495386
 WINDOW_SIZE = 2000
-VERTICAL_WINDOW_SIZE = 2000
 
 
 def solve(photos: typing.List[model.Photo]) -> model.Slideshow:
@@ -25,13 +24,14 @@ def solve(photos: typing.List[model.Photo]) -> model.Slideshow:
     current_slide: model.Slide
 
     random.shuffle(photos)
-    # sorted(photos, key=lambda photo: len(photo.tags))
     first_photo: model.Photo = photos.pop(0)
 
     if first_photo.orientation == "H":
         current_slide = model.HorizontalSlide(first_photo)
     else:
-        second_photo = next(filter(lambda x: x.orientation == "V", photos))
+        second_photo: model.Photo = next(
+          filter(lambda x: x.orientation == "V", photos)
+        )
         photos.remove(second_photo)
 
         current_slide = model.VerticalSlide(first_photo, second_photo)
@@ -52,8 +52,7 @@ def solve(photos: typing.List[model.Photo]) -> model.Slideshow:
                 best_slide = model.HorizontalSlide(best_photo)
             else:
                 vertical_photos_window = islice(
-                  filter(lambda x: x.orientation == "V", photos),
-                  VERTICAL_WINDOW_SIZE
+                  filter(lambda x: x.orientation == "V", photos), WINDOW_SIZE
                 )
                 other_best_photo: model.Photo = max(
                   vertical_photos_window,
@@ -85,8 +84,9 @@ def do_one(file: str) -> None:
 
     input_name: str = input_file.name.replace(".txt", "")
     output_file: Path = Path.cwd().joinpath(
-      "out_do_one",
-      "out-from_{}-score_{}.txt".format(input_name, slideshow.score())
+      "out_do_one", "out-from_{}-score_{}-window_{}.txt".format(
+        input_name, slideshow.score(), WINDOW_SIZE
+      )
     )
 
     slideshow.save(output_file)

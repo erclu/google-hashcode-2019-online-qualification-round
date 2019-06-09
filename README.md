@@ -6,9 +6,9 @@ this repo contains my improvements on the solution we submitted for the extended
 |-:|-:|
 | 796.086 | 1.271.117
 
-|file|score|
-|-:|:-|
-|input1|21081|
-|input2|1416|
-|input3|412436|
-|input4|361153|
+|file|score|my score |
+|-:|:-|:-|
+|input1|21081|109359|
+|input2|1416|1749|
+|input3|412436|387601|
+|input4|361153|495386|
