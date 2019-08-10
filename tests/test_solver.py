@@ -26,7 +26,7 @@ def test_solve() -> None:
     for _ in range(5): # XXX this is horrible and i feel ashamed
         photos: typing.List[model.Photo] = model.Photo.from_file(example_file)
 
-        slideshow: model.Slideshow = solve(photos)
+        slideshow: model.Slideshow = solve(photos, 2000)
         if slideshow.score() == 2:
             yay = True
 

@@ -7,19 +7,21 @@ from tqdm import tqdm
 
 from . import model
 
-# max points with:
+# max points with (?):
 # WINDOW_SIZE = 10000
 # VERTICAL_WINDOW_SIZE = 10000
-#
-# input1 109359
-# input2 1749
-# input3 387601 XXX still bad. reversing the sort order helps minorly (?)
+
+# input1 161916
+# input2 1773
+# input3 387885 XXX still bad. reversing the sort order helps minorly (?)
 # input4 495386
 WINDOW_SIZE = 2000
 
 
-def solve(photos: typing.List[model.Photo]) -> model.Slideshow:
-    slideshow: model.Slideshow = model.Slideshow()
+def solve(
+  photos: typing.List[model.Photo], window_size: int
+) -> model.Slideshow:
+    slideshow = model.Slideshow()
 
     current_slide: model.Slide
 
@@ -43,7 +45,7 @@ def solve(photos: typing.List[model.Photo]) -> model.Slideshow:
 
     with tqdm(total=len(photos), ascii=True) as pbar:
         while photos:
-            sliding_window = islice(photos, WINDOW_SIZE)
+            sliding_window = islice(photos, window_size)
             best_photo: model.Photo = max(
               sliding_window,
               key=lambda ph: model.score_tags(current_slide.tags, ph.tags)
@@ -55,7 +57,7 @@ def solve(photos: typing.List[model.Photo]) -> model.Slideshow:
                 best_slide = model.HorizontalSlide(best_photo)
             else:
                 vertical_photos_window = islice(
-                  filter(lambda x: x.orientation == "V", photos), WINDOW_SIZE
+                  filter(lambda x: x.orientation == "V", photos), window_size
                 )
                 other_best_photo: model.Photo = max(
                   vertical_photos_window,
@@ -78,17 +80,18 @@ def solve(photos: typing.List[model.Photo]) -> model.Slideshow:
     return slideshow
 
 
-def do_one(file: str) -> None:
+def do_one(file: str, window_size: int = WINDOW_SIZE) -> None:
     input_file: Path = Path(file).resolve()
+    print(f"solving {input_file} with a window size of {window_size}")
 
     photos: typing.List[model.Photo] = model.Photo.from_file(input_file)
-    slideshow: model.Slideshow = solve(photos)
+    slideshow: model.Slideshow = solve(photos, window_size)
     print(slideshow.score())
 
     input_name: str = input_file.name.replace(".txt", "")
     output_file: Path = Path.cwd().joinpath(
       "out_do_one", "out-from_{}-score_{}-window_{}.txt".format(
-        input_name, slideshow.score(), WINDOW_SIZE
+        input_name, slideshow.score(), window_size
       )
     )
 
