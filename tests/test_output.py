@@ -96,7 +96,7 @@ def test_submitted_output(submitted_output_file: Path) -> None:
     input_file: Path = Path(
       INPUT_FOLDER,
       re.sub(
-        r'-\d+\.txt', ".txt",
+        r'-.+\.txt', ".txt",
         submitted_output_file.name.replace("output", "input")
       )
     )
