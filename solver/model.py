@@ -1,4 +1,4 @@
-from __future__ import annotations # ref PEP 563
+from __future__ import annotations  # ref PEP 563
 
 import typing
 from pathlib import Path
@@ -12,15 +12,9 @@ def score_tags(first: typing.Set[str], second: typing.Set[str]) -> int:
 
 
 class Photo:
-    __slots__ = (
-      "photo_id",
-      "orientation",
-      "tags",
-    )
+    __slots__ = ("photo_id", "orientation", "tags")
 
-    def __init__(
-      self, photo_id: int, orientation: str, tags: typing.Set[str]
-    ) -> None:
+    def __init__(self, photo_id: int, orientation: str, tags: typing.Set[str]) -> None:
         self.photo_id = photo_id
         self.orientation = orientation
         self.tags = tags
@@ -33,9 +27,7 @@ class Photo:
         args: typing.List[str] = line.split(" ")
 
         orientation: str = args[0]
-        assert orientation in (
-          "H", "V"
-        ), "orientation was not parsed correctly"
+        assert orientation in ("H", "V"), "orientation was not parsed correctly"
 
         tags: typing.Set[str] = set(args[2:])
         assert len(tags) == int(args[1]), "not all tags were found"
@@ -64,12 +56,10 @@ class Slide:
 
 
 class HorizontalSlide(Slide):
-    __slots__ = ("photo", )
+    __slots__ = ("photo",)
 
     def __init__(self, photo: Photo) -> None:
-        assert photo.orientation == "H", (
-          "wrong orientation for this slide type"
-        )
+        assert photo.orientation == "H", "wrong orientation for this slide type"
         self.photo = photo
 
     def __repr__(self) -> str:
@@ -79,9 +69,10 @@ class HorizontalSlide(Slide):
         return self.photo.photo_id
 
     def __eq__(self, other: typing.Any) -> bool:
-        return isinstance(
-          other, HorizontalSlide
-        ) and self.photo.photo_id == other.photo.photo_id
+        return (
+            isinstance(other, HorizontalSlide)
+            and self.photo.photo_id == other.photo.photo_id
+        )
 
     @property
     def tags(self) -> typing.Set[str]:
@@ -89,15 +80,12 @@ class HorizontalSlide(Slide):
 
 
 class VerticalSlide(Slide):
-    __slots__ = (
-      "first",
-      "second",
-    )
+    __slots__ = ("first", "second")
 
     def __init__(self, first: Photo, second: Photo) -> None:
-        assert first.orientation == "V" and second.orientation == "V", (
-          "wrong orientation for this slide type"
-        )
+        assert (
+            first.orientation == "V" and second.orientation == "V"
+        ), "wrong orientation for this slide type"
         self.first = first
         self.second = second
 
@@ -122,10 +110,7 @@ class VerticalSlide(Slide):
 
 
 class Slideshow:
-    __slots__ = (
-      "slides",
-      "_score",
-    )
+    __slots__ = ("slides", "_score")
 
     def __init__(self) -> None:
         self.slides: typing.List[Slide] = []
@@ -135,8 +120,11 @@ class Slideshow:
         return str(self.slides)
 
     def to_string(self) -> str:
-        return "{}\n".format(len(self.slides)
-                             ) + "\n".join(str(x) for x in self.slides) + "\n"
+        return (
+            "{}\n".format(len(self.slides))
+            + "\n".join(str(x) for x in self.slides)
+            + "\n"
+        )
 
     def save(self, filename: Path) -> None:
         filename.write_text(self.to_string(), encoding="UTF-8")

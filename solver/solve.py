@@ -18,9 +18,7 @@ from . import model
 WINDOW_SIZE = 2000
 
 
-def solve(
-  photos: typing.List[model.Photo], window_size: int
-) -> model.Slideshow:
+def solve(photos: typing.List[model.Photo], window_size: int) -> model.Slideshow:
     slideshow = model.Slideshow()
 
     current_slide: model.Slide
@@ -34,9 +32,7 @@ def solve(
     if first_photo.orientation == "H":
         current_slide = model.HorizontalSlide(first_photo)
     else:
-        second_photo: model.Photo = next(
-          filter(lambda x: x.orientation == "V", photos)
-        )
+        second_photo: model.Photo = next(filter(lambda x: x.orientation == "V", photos))
         photos.remove(second_photo)
 
         current_slide = model.VerticalSlide(first_photo, second_photo)
@@ -47,8 +43,8 @@ def solve(
         while photos:
             sliding_window = islice(photos, window_size)
             best_photo: model.Photo = max(
-              sliding_window,
-              key=lambda ph: model.score_tags(current_slide.tags, ph.tags)
+                sliding_window,
+                key=lambda ph: model.score_tags(current_slide.tags, ph.tags),
             )
             photos.remove(best_photo)
 
@@ -57,13 +53,13 @@ def solve(
                 best_slide = model.HorizontalSlide(best_photo)
             else:
                 vertical_photos_window = islice(
-                  filter(lambda x: x.orientation == "V", photos), window_size
+                    filter(lambda x: x.orientation == "V", photos), window_size
                 )
                 other_best_photo: model.Photo = max(
-                  vertical_photos_window,
-                  key=lambda ph: model.score_tags(
-                    current_slide.tags, ph.tags.union(best_photo.tags)
-                  )
+                    vertical_photos_window,
+                    key=lambda ph: model.score_tags(
+                        current_slide.tags, ph.tags.union(best_photo.tags)
+                    ),
                 )
                 photos.remove(other_best_photo)
 
@@ -90,9 +86,10 @@ def do_one(file: str, window_size: int = WINDOW_SIZE) -> None:
 
     input_name: str = input_file.name.replace(".txt", "")
     output_file: Path = Path.cwd().joinpath(
-      "out_do_one", "out-from_{}-score_{}-window_{}.txt".format(
-        input_name, slideshow.score(), window_size
-      )
+        "out_do_one",
+        "out-from_{}-score_{}-window_{}.txt".format(
+            input_name, slideshow.score(), window_size
+        ),
     )
 
     slideshow.save(output_file)
@@ -100,6 +97,7 @@ def do_one(file: str, window_size: int = WINDOW_SIZE) -> None:
 
 def profile_me() -> None:
     import line_profiler
+
     lineprof = line_profiler.LineProfiler()
     wrapped_solve = lineprof(solve)
 
