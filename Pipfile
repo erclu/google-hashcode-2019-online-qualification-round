@@ -14,7 +14,7 @@ rope = "*"
 yapf = "*"
 
 [packages]
-line-profiler = {path = "./../_LIBRARIES-WHEELS-ETC/line_profiler-2.1.2-cp37-cp37m-win_amd64.whl"}
+line-profiler = {path = "./../_LIBRARIES-WHEELS-ETC/line_profiler-2.1.2-cp37-cp37m-win_amd64.whl",sys_platform = "== 'win32'"}
 tqdm = "*"
 
 [requires]
