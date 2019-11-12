@@ -1,9 +1,9 @@
 [run]
 branch = True
-; TODO should i check the coverage of the tests themselves?
+# TODO should i check the coverage of the tests themselves?
 omit =
     tests/*
-; data_file = ?????
+# data_file = ?????
 
 [report]
 exclude_lines =
