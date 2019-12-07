@@ -1,8 +1,8 @@
 [run]
 branch = True
-# TODO should i check the coverage of the tests themselves?
-omit =
-    tests/*
+# uncomment to avoid checking coverage in test code
+# omit =
+#      tests/*
 # data_file = ?????
 
 [report]
@@ -16,3 +16,6 @@ skip_covered = True
 
 [html]
 directory = .coverage_report
+
+[xml]
+output = .coverage_report/cov.xml
