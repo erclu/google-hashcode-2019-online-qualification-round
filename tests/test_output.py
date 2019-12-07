@@ -4,16 +4,12 @@ from pathlib import Path
 
 import pytest
 
-OUTPUT_FOLDER: Path = Path(__file__
-                           ).resolve().parents[1].joinpath("out_do_one")
-SUBMITTED_OUTPUT_FOLDER: Path = OUTPUT_FOLDER.parent.joinpath(
-  "submitted_outputs"
-)
+OUTPUT_FOLDER: Path = Path(__file__).resolve().parents[1].joinpath("out_do_one")
+SUBMITTED_OUTPUT_FOLDER: Path = OUTPUT_FOLDER.parent.joinpath("submitted_outputs")
 INPUT_FOLDER: Path = OUTPUT_FOLDER.parent.joinpath("in")
 
 
 def compare_input_output_files(input_file: Path, output_file: Path) -> None:
-
     def get_input_photos_number(input_file: Path) -> int:
         with typing.cast(typing.TextIO, input_file.open("r")) as infile:
             declared_input_photos_number = int(infile.readline())
@@ -35,8 +31,8 @@ def compare_input_output_files(input_file: Path, output_file: Path) -> None:
                 raise ValueError
 
         assert (
-          vertical_input_photos_number +
-          horizontal_input_photos_number == input_photos_number
+            vertical_input_photos_number + horizontal_input_photos_number
+            == input_photos_number
         )
 
         return input_photos_number
@@ -66,22 +62,23 @@ def compare_input_output_files(input_file: Path, output_file: Path) -> None:
         assert output_slides_number <= output_photos_number
 
         assert (
-          vertical_output_photos_number +
-          horizontal_output_photos_number == output_photos_number
+            vertical_output_photos_number + horizontal_output_photos_number
+            == output_photos_number
         )
         return output_photos_number
 
-    assert get_input_photos_number(input_file
-                                   ) == get_output_photos_number(output_file)
+    assert get_input_photos_number(input_file) == get_output_photos_number(output_file)
 
 
 @pytest.mark.parametrize("output_file", OUTPUT_FOLDER.glob("out-from*.txt"))
 def test_output_file(output_file: Path) -> None:
     input_file: Path = Path(
-      INPUT_FOLDER,
-      re.sub(
-        r"-score_\d+(-window_\d+)?\.txt", ".txt", output_file.name.replace("out-from_", "")
-      )
+        INPUT_FOLDER,
+        re.sub(
+            r"-score_\d+(-window_\d+)?\.txt",
+            ".txt",
+            output_file.name.replace("out-from_", ""),
+        ),
     )
     assert input_file.exists()
 
@@ -90,15 +87,14 @@ def test_output_file(output_file: Path) -> None:
 
 @pytest.mark.skip(reason="results never change")
 @pytest.mark.parametrize(
-  "submitted_output_file", SUBMITTED_OUTPUT_FOLDER.glob("output*.txt")
+    "submitted_output_file", SUBMITTED_OUTPUT_FOLDER.glob("output*.txt")
 )
 def test_submitted_output(submitted_output_file: Path) -> None:
     input_file: Path = Path(
-      INPUT_FOLDER,
-      re.sub(
-        r'-.+\.txt', ".txt",
-        submitted_output_file.name.replace("output", "input")
-      )
+        INPUT_FOLDER,
+        re.sub(
+            r"-.+\.txt", ".txt", submitted_output_file.name.replace("output", "input")
+        ),
     )
     assert input_file.exists()
 

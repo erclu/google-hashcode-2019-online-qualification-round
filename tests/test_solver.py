@@ -18,12 +18,12 @@ def input2_photos_list() -> typing.List[model.Photo]:
 
 def test_solve() -> None:
     example_file: Path = Path(__file__).resolve().parents[1].joinpath(
-      "in", "a_example.txt"
+        "in", "a_example.txt"
     )
     assert example_file.exists()
 
     yay: bool = False
-    for _ in range(5): # XXX this is horrible and i feel ashamed
+    for _ in range(5):  # XXX this is horrible and i feel ashamed
         photos: typing.List[model.Photo] = model.Photo.from_file(example_file)
 
         slideshow: model.Slideshow = solve(photos, 2000)

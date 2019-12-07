@@ -11,7 +11,7 @@ from solver import model
 @pytest.fixture(scope="session")
 def example_photos() -> typing.List[model.Photo]:
     example_file: Path = Path(__file__).resolve().parents[1].joinpath(
-      "in", "a_example.txt"
+        "in", "a_example.txt"
     )
     assert example_file.exists()
 
@@ -37,13 +37,11 @@ def test_example_file(example_photos: typing.List[model.Photo]) -> None:
         assert slideshow.score() == result
 
 
-def test_write(
-  example_photos: typing.List[model.Photo], tmp_path: Path
-) -> None:
+def test_write(example_photos: typing.List[model.Photo], tmp_path: Path) -> None:
     slides_list = [
-      model.HorizontalSlide(example_photos[0]),
-      model.HorizontalSlide(example_photos[3]),
-      model.VerticalSlide(example_photos[1], example_photos[2])
+        model.HorizontalSlide(example_photos[0]),
+        model.HorizontalSlide(example_photos[3]),
+        model.VerticalSlide(example_photos[1], example_photos[2]),
     ]
     slideshow = model.Slideshow.from_list(slides_list)
 
@@ -66,8 +64,7 @@ def test_equality() -> None:
     assert h_slide_1 == model.HorizontalSlide(h_photo_1_bis)
     assert h_slide_1 != model.HorizontalSlide(h_photo_2)
 
-    class Dummy: # pylint: disable=too-few-public-methods
-
+    class Dummy:  # pylint: disable=too-few-public-methods
         def __init__(self) -> None:
             self.dummy_var = "hello"
 
@@ -95,10 +92,10 @@ def test_slotted() -> None:
     v_photo_2 = model.Photo(2, "V", {"b", "c"})
 
     my_classes = (
-      h_photo,
-      model.HorizontalSlide(h_photo),
-      model.VerticalSlide(v_photo_1, v_photo_2),
-      model.Slideshow(),
+        h_photo,
+        model.HorizontalSlide(h_photo),
+        model.VerticalSlide(v_photo_1, v_photo_2),
+        model.Slideshow(),
     )
 
     for my_class in my_classes:
@@ -116,8 +113,7 @@ def test_slideshow_score() -> None:
     _parent_folder = Path(__file__).resolve().parents[1]
 
     input_files = _parent_folder.joinpath("in").glob("input*txt")
-    solution_files = _parent_folder.joinpath("submitted_outputs"
-                                             ).glob("output*txt")
+    solution_files = _parent_folder.joinpath("submitted_outputs").glob("output*txt")
 
     input_file: Path
     solution_file: Path
@@ -139,8 +135,9 @@ def test_slideshow_score() -> None:
             else:
                 i, j = [int(x) for x in str_index.split(" ")]
                 slide = model.VerticalSlide(photos[i], photos[j])
-                assert int(slide.first.photo_id
-                           ) == i and int(slide.second.photo_id) == j
+                assert (
+                    int(slide.first.photo_id) == i and int(slide.second.photo_id) == j
+                )
 
             slideshow.append(slide)
 
