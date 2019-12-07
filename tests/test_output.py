@@ -80,7 +80,7 @@ def test_output_file(output_file: Path) -> None:
     input_file: Path = Path(
       INPUT_FOLDER,
       re.sub(
-        r'-score_\d+\.txt', ".txt", output_file.name.replace("out-from_", "")
+        r"-score_\d+(-window_\d+)?\.txt", ".txt", output_file.name.replace("out-from_", "")
       )
     )
     assert input_file.exists()
