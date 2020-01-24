@@ -12,3 +12,15 @@ this repo contains my improvements on the solution we submitted for the extended
 |input2|1416|1749|
 |input3|412436|387601|
 |input4|361153|495386|
+
+## Usage
+
+`cd` to project root and run:
+
+```bash
+pipenv install --dev # to install dependencies
+
+python -m solver /in/file.ext WINDOW_SIZE
+```
+
+where WINDOW_SIZE is the sliding window size. If it's bigger than the dataset, it runs the full O(N^2) algorithm
